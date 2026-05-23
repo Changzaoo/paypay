@@ -7,6 +7,7 @@ import Timeline from "../components/Timeline";
 import { useOrderStore } from "../store/orderStore";
 
 const sourceDefault = { coin: "USDT", network: "liquid", label: "USDT Liquid" };
+const recentKey = "paypay_recent_routes";
 
 const fallbackOptions = [
   { coin: "ETH", name: "Ethereum", networks: [{ id: "ethereum", label: "Ethereum" }, { id: "arbitrum", label: "Arbitrum" }, { id: "base", label: "Base" }] },
@@ -51,6 +52,21 @@ function Input({ value, onChange, type = "text", required = false, placeholder =
   );
 }
 
+function readRecentRoutes() {
+  if (typeof window === "undefined") return [];
+  try {
+    const value = JSON.parse(window.localStorage.getItem(recentKey) || "[]");
+    return Array.isArray(value) ? value.slice(0, 6) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRecentRoutes(items) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(recentKey, JSON.stringify(items.slice(0, 6)));
+}
+
 const stagePreview = (hasOrder) => previewTimeline.map((item, index) => ({
   ...item,
   state: hasOrder ? (index === 0 ? "done" : index === 1 ? "current" : "pending") : (index === 0 ? "current" : "pending")
@@ -64,7 +80,10 @@ export default function NewOrder() {
   const loading = useOrderStore((state) => state.loading);
   const error = useOrderStore((state) => state.error);
   const [advanced, setAdvanced] = useState(false);
-  const [query, setQuery] = useState("");
+  const [openSelect, setOpenSelect] = useState("");
+  const [assetQuery, setAssetQuery] = useState("");
+  const [networkQuery, setNetworkQuery] = useState("");
+  const [recentRoutes, setRecentRoutes] = useState(() => readRecentRoutes());
   const [result, setResult] = useState(null);
   const [form, setForm] = useState({
     amountBrl: "",
@@ -86,10 +105,22 @@ export default function NewOrder() {
   const selectedAsset = options.find((item) => item.coin === form.outputAsset) || options[0];
   const selectedNetwork = selectedAsset?.networks?.find((item) => item.id === form.outputNetwork) || selectedAsset?.networks?.[0];
   const filteredOptions = useMemo(() => {
-    const text = query.trim().toLowerCase();
+    const text = assetQuery.trim().toLowerCase();
     if (!text) return options;
     return options.filter((item) => `${item.coin} ${item.name}`.toLowerCase().includes(text));
-  }, [options, query]);
+  }, [options, assetQuery]);
+  const filteredNetworks = useMemo(() => {
+    const text = networkQuery.trim().toLowerCase();
+    const rows = selectedAsset?.networks || [];
+    if (!text) return rows;
+    return rows.filter((item) => `${item.id} ${item.label}`.toLowerCase().includes(text));
+  }, [selectedAsset, networkQuery]);
+  const hydratedRecentRoutes = useMemo(() => recentRoutes.map((item) => {
+    const asset = options.find((option) => option.coin === item.asset);
+    const network = asset?.networks?.find((route) => route.id === item.network);
+    if (!asset || !network) return null;
+    return { asset, network };
+  }).filter(Boolean), [recentRoutes, options]);
   const timelineItems = result?.timeline?.length ? result.timeline : stagePreview(Boolean(result));
   const timelineFlow = {
     ...result,
@@ -101,7 +132,22 @@ export default function NewOrder() {
   const changeAsset = (item) => {
     const network = item.networks?.[0]?.id || "";
     setForm((current) => ({ ...current, outputAsset: item.coin, outputNetwork: network || current.outputNetwork }));
-    setQuery("");
+    setAssetQuery("");
+    setNetworkQuery("");
+    setOpenSelect("");
+  };
+  const changeRoute = (asset, network) => {
+    setForm((current) => ({ ...current, outputAsset: asset.coin, outputNetwork: network.id }));
+    rememberRoute(asset, network);
+    setAssetQuery("");
+    setNetworkQuery("");
+    setOpenSelect("");
+  };
+  const rememberRoute = (asset, network) => {
+    if (!asset?.coin || !network?.id) return;
+    const next = [{ asset: asset.coin, network: network.id }, ...recentRoutes.filter((item) => item.asset !== asset.coin || item.network !== network.id)].slice(0, 6);
+    setRecentRoutes(next);
+    writeRecentRoutes(next);
   };
   useEffect(() => {
     loadSettlementOptions();
@@ -122,6 +168,7 @@ export default function NewOrder() {
   }, [result?.publicId, fetchStatus]);
   const submit = async (event) => {
     event.preventDefault();
+    rememberRoute(selectedAsset, selectedNetwork);
     const data = await create({ ...form, amountBrl: Number(form.amountBrl) });
     setResult(data);
   };
@@ -151,50 +198,82 @@ export default function NewOrder() {
                 {source.label || `${source.coin} ${source.network}`}
               </div>
             </div>
-            <div className="grid gap-3">
-              <label className="space-y-2">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="relative space-y-2">
                 <span className="text-sm font-medium text-slate-300">Moeda de saida</span>
-                <div className="ios-control flex h-11 items-center gap-2 px-3">
-                  <Search size={16} className="shrink-0 text-slate-500" />
-                  <input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Buscar moeda"
-                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
-                  />
-                </div>
-              </label>
-              <div className="grid max-h-52 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
-                {filteredOptions.map((item) => (
-                  <button
-                    key={item.coin}
-                    type="button"
-                    onClick={() => changeAsset(item)}
-                    className={`min-h-14 rounded-[18px] border px-3 py-2 text-left transition ${form.outputAsset === item.coin ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(37,99,235,0.2)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
-                  >
-                    <div className="text-sm font-semibold">{item.coin}</div>
-                    <div className="truncate text-xs opacity-70">{item.name}</div>
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={() => setOpenSelect((value) => value === "asset" ? "" : "asset")}
+                  className="ios-control flex min-h-12 w-full items-center justify-between gap-3 px-3 text-left"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-white">{selectedAsset?.coin || form.outputAsset}</span>
+                    <span className="block truncate text-xs text-slate-500">{selectedAsset?.name || "Moeda"}</span>
+                  </span>
+                  <ChevronDown size={17} className={`shrink-0 text-slate-500 transition ${openSelect === "asset" ? "rotate-180" : ""}`} />
+                </button>
+                {openSelect === "asset" && (
+                  <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[22px] border border-white/10 bg-[#111418]/95 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl">
+                    <div className="ios-control flex h-10 items-center gap-2 px-3">
+                      <Search size={15} className="shrink-0 text-slate-500" />
+                      <input value={assetQuery} onChange={(event) => setAssetQuery(event.target.value)} placeholder="Buscar moeda" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600" />
+                    </div>
+                    {hydratedRecentRoutes.length > 0 && (
+                      <div className="mt-3">
+                        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Ultimas usadas</div>
+                        <div className="flex flex-wrap gap-2">
+                          {hydratedRecentRoutes.map(({ asset, network }) => (
+                            <button key={`${asset.coin}-${network.id}`} type="button" onClick={() => changeRoute(asset, network)} className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-white/10">
+                              {asset.coin} / {network.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="mt-3 grid max-h-60 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+                      {filteredOptions.map((item) => (
+                        <button key={item.coin} type="button" onClick={() => changeAsset(item)} className={`rounded-[16px] border px-3 py-2 text-left transition ${form.outputAsset === item.coin ? "border-white/20 brand-gradient text-white" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}>
+                          <span className="block text-sm font-semibold">{item.coin}</span>
+                          <span className="block truncate text-xs opacity-70">{item.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium text-slate-300">Rede de saida</div>
+              <div className="relative space-y-2">
+                <span className="flex items-center justify-between gap-3 text-sm font-medium text-slate-300">
+                  Rede de saida
                   <Wallet size={17} className="text-slate-500" />
-                </div>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {(selectedAsset?.networks || []).map((network) => (
-                    <button
-                      key={network.id}
-                      type="button"
-                      onClick={() => change("outputNetwork", network.id)}
-                      className={`min-h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network.id ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
-                    >
-                      <span>{network.label}</span>
-                      {network.hasMemo && <span className="ml-2 rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase text-slate-300">memo</span>}
-                    </button>
-                  ))}
-                </div>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setOpenSelect((value) => value === "network" ? "" : "network")}
+                  className="ios-control flex min-h-12 w-full items-center justify-between gap-3 px-3 text-left"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-white">{selectedNetwork?.label || form.outputNetwork}</span>
+                    <span className="block truncate text-xs text-slate-500">{selectedNetwork?.id || "rede"}</span>
+                  </span>
+                  <ChevronDown size={17} className={`shrink-0 text-slate-500 transition ${openSelect === "network" ? "rotate-180" : ""}`} />
+                </button>
+                {openSelect === "network" && (
+                  <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[22px] border border-white/10 bg-[#111418]/95 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl">
+                    <div className="ios-control flex h-10 items-center gap-2 px-3">
+                      <Search size={15} className="shrink-0 text-slate-500" />
+                      <input value={networkQuery} onChange={(event) => setNetworkQuery(event.target.value)} placeholder="Buscar rede" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600" />
+                    </div>
+                    <div className="mt-3 grid max-h-60 gap-2 overflow-y-auto pr-1">
+                      {filteredNetworks.map((network) => (
+                        <button key={network.id} type="button" onClick={() => changeRoute(selectedAsset, network)} className={`rounded-[16px] border px-3 py-2 text-left transition ${form.outputNetwork === network.id ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}>
+                          <span className="text-sm font-semibold">{network.label}</span>
+                          <span className="ml-2 text-xs text-slate-500">{network.id}</span>
+                          {network.hasMemo && <span className="ml-2 rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase text-slate-300">memo</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </section>

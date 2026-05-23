@@ -24,15 +24,17 @@ const labels = ["PIX", "Entrada", "Confirmado", "DePix", "USDT L", "Shift", "Env
 const colors = ["#64748b", "#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e", "#14b8a6", "#06b6d4"];
 const terminal = new Set(["FAILED", "EXPIRED", "REFUNDED", "CANCELLED"]);
 
-export default function FlowStepper({ status, dense = false }) {
+export default function FlowStepper({ status, dense = false, plain = false }) {
   const current = Math.min(stateRank[status] ?? 0, labels.length - 1);
   const percent = progressForStatus(status);
   return (
     <div className={`flow-stepper ${dense ? "flow-stepper-dense" : ""}`}>
-      <div className="flow-stepper-head">
-        <span>{percent}%</span>
-        <span>{stepForStatus(status) || labels[current] || "PIX"}</span>
-      </div>
+      {!plain && (
+        <div className="flow-stepper-head">
+          <span>{percent}%</span>
+          <span>{stepForStatus(status) || labels[current] || "PIX"}</span>
+        </div>
+      )}
       <div className="flow-stepper-path">
         <div className="flow-stepper-line" />
         <div className="flow-stepper-active" style={{ width: `${percent}%` }} />

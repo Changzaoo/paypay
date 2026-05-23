@@ -167,17 +167,7 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
   if (variant === "compact") {
     return (
       <div className="w-full">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="min-w-0">
-            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Fluxo real</div>
-            <div className="mt-1 break-words text-lg font-semibold text-white">{`PIX BRL -> DePix -> USDT Liquid -> ${context.finalRoute}`}</div>
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-sm font-semibold text-white">{progress}%</div>
-            <div className="text-sm text-slate-500">{done}/{rows.length}</div>
-          </div>
-        </div>
-        <FlowStepper status={rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED")} />
+        <FlowStepper status={rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED")} plain />
       </div>
     );
   }

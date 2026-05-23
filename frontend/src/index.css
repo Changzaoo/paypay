@@ -155,8 +155,8 @@ textarea {
   .flow-stepper-path {
     position: relative;
     margin-top: 0.7rem;
-    min-height: 92px;
-    overflow: hidden;
+    min-height: 104px;
+    overflow: visible;
   }
 
   .flow-stepper-line,
@@ -164,7 +164,7 @@ textarea {
     position: absolute;
     left: 4%;
     right: 4%;
-    top: 38px;
+    top: 44px;
     height: 2px;
     border-radius: 999px;
   }
@@ -185,9 +185,11 @@ textarea {
     display: grid;
     grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 0.25rem;
+    min-height: 104px;
   }
 
   .flow-step {
+    position: relative;
     min-width: 0;
     text-align: center;
   }
@@ -198,7 +200,7 @@ textarea {
     display: grid;
     width: 20px;
     height: 20px;
-    margin: 28px auto 0;
+    margin: 34px auto 0;
     place-items: center;
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 999px;
@@ -225,7 +227,10 @@ textarea {
   }
 
   .flow-step-number {
-    margin-top: -56px;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
     font-size: clamp(1rem, 2.2vw, 1.65rem);
     line-height: 1;
     font-weight: 800;
@@ -233,7 +238,7 @@ textarea {
   }
 
   .flow-step-label {
-    margin-top: 42px;
+    margin-top: 16px;
     overflow: hidden;
     color: rgba(203,213,225,0.72);
     font-size: 0.66rem;
@@ -249,7 +254,7 @@ textarea {
   }
 
   .flow-stepper-dense .flow-stepper-path {
-    min-height: 58px;
+    min-height: 68px;
     margin-top: 0.35rem;
   }
 
@@ -257,23 +262,26 @@ textarea {
   .flow-stepper-dense .flow-stepper-active {
     left: 5%;
     right: 5%;
-    top: 24px;
+    top: 30px;
+  }
+
+  .flow-stepper-dense .flow-stepper-steps {
+    min-height: 68px;
   }
 
   .flow-stepper-dense .flow-step-node {
     width: 14px;
     height: 14px;
-    margin-top: 18px;
+    margin-top: 24px;
     box-shadow: 0 0 0 4px rgba(5,6,8,0.92);
   }
 
   .flow-stepper-dense .flow-step-number {
-    margin-top: -38px;
     font-size: 0.9rem;
   }
 
   .flow-stepper-dense .flow-step-label {
-    margin-top: 26px;
+    margin-top: 9px;
     font-size: 0.56rem;
   }
 

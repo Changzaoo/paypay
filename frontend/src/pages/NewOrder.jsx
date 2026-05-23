@@ -122,7 +122,7 @@ export default function NewOrder() {
                   key={asset}
                   type="button"
                   onClick={() => changeAsset(asset)}
-                  className={`h-12 rounded-full border text-sm font-semibold transition ${form.outputAsset === asset ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(36,178,255,0.16)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
+                  className={`h-12 rounded-full border text-sm font-semibold transition ${form.outputAsset === asset ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(37,99,235,0.2)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
                 >
                   {assetText[asset]}
                 </button>
@@ -134,7 +134,7 @@ export default function NewOrder() {
                   key={network}
                   type="button"
                   onClick={() => change("outputNetwork", network)}
-                  className={`h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network ? "border-cyan-200/35 bg-cyan-300/10 text-cyan-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
+                  className={`h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
                 >
                   {networkText[network]}
                 </button>

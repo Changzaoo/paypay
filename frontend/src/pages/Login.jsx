@@ -27,7 +27,7 @@ export default function Login() {
         <div className="mb-8">
           <div className="mb-6 flex items-center justify-between gap-4">
             <BrandMark size="lg" />
-            <div className="ios-control grid h-12 w-12 place-items-center text-cyan-200">
+            <div className="ios-control grid h-12 w-12 place-items-center text-blue-200">
               <Lock size={21} />
             </div>
           </div>

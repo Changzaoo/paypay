@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-  background: #010203;
+  background: #000000;
 }
 
 body {
@@ -11,11 +11,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0) 20rem),
-    linear-gradient(115deg, rgba(0,242,220,0.14) 0%, rgba(0,242,220,0) 32%),
-    linear-gradient(245deg, rgba(159,52,255,0.16) 0%, rgba(159,52,255,0) 34%),
-    linear-gradient(155deg, rgba(48,139,255,0.12) 0%, rgba(48,139,255,0) 42%),
-    linear-gradient(135deg, #010203 0%, #05080d 46%, #080b12 100%);
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 18rem),
+    linear-gradient(180deg, #050608 0%, #020304 44%, #000000 100%);
   color: #f5f5f7;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -50,62 +47,58 @@ textarea {
 
 @layer components {
   .ios-surface {
-    border: 1px solid rgba(119, 236, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.105), rgba(255,255,255,0.045)),
-      linear-gradient(135deg, rgba(0,242,220,0.045), rgba(153,62,255,0.045)),
-      rgba(255, 255, 255, 0.04);
+      linear-gradient(180deg, rgba(255,255,255,0.095), rgba(255,255,255,0.038)),
+      rgba(14, 16, 20, 0.72);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.16),
       inset 0 -1px 0 rgba(255,255,255,0.04),
-      0 24px 80px rgba(0,0,0,0.34);
-    backdrop-filter: blur(26px) saturate(1.4);
-    -webkit-backdrop-filter: blur(26px) saturate(1.4);
+      0 24px 80px rgba(0,0,0,0.42);
+    backdrop-filter: blur(26px) saturate(1.2);
+    -webkit-backdrop-filter: blur(26px) saturate(1.2);
     border-radius: 26px;
   }
 
   .ios-surface-strong {
-    border: 1px solid rgba(119, 236, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)),
-      linear-gradient(135deg, rgba(0,242,220,0.055), rgba(153,62,255,0.055)),
-      rgba(255, 255, 255, 0.055);
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.05)),
+      rgba(14, 16, 20, 0.82);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.2),
       0 28px 90px rgba(0,0,0,0.34);
-    backdrop-filter: blur(30px) saturate(1.45);
-    -webkit-backdrop-filter: blur(30px) saturate(1.45);
+    backdrop-filter: blur(30px) saturate(1.22);
+    -webkit-backdrop-filter: blur(30px) saturate(1.22);
     border-radius: 30px;
   }
 
   .ios-control {
-    border: 1px solid rgba(119, 236, 255, 0.13);
-    background:
-      linear-gradient(135deg, rgba(0,242,220,0.035), rgba(153,62,255,0.035)),
-      rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(255, 255, 255, 0.055);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.09);
     border-radius: 18px;
   }
 
   .ios-control:focus-within {
-    border-color: rgba(0, 242, 220, 0.58);
+    border-color: rgba(58, 166, 255, 0.58);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.1),
-      0 0 0 4px rgba(0, 242, 220, 0.11);
+      0 0 0 4px rgba(58, 166, 255, 0.12);
   }
 
   .ios-button-primary {
     border-radius: 999px;
-    background: linear-gradient(135deg, #12f1dc 0%, #3aa6ff 50%, #9d38ff 100%);
+    background: linear-gradient(135deg, #1fb6ff 0%, #2563eb 100%);
     color: #ffffff;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.75),
-      0 14px 40px rgba(31,202,255,0.16),
+      0 14px 40px rgba(37,99,235,0.22),
       0 8px 22px rgba(0,0,0,0.22);
   }
 
   .ios-button-secondary {
-    border: 1px solid rgba(119, 236, 255, 0.13);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 999px;
     background: rgba(255,255,255,0.08);
     color: #f5f5f7;
@@ -113,11 +106,10 @@ textarea {
   }
 
   .ios-dock {
-    border: 1px solid rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.14);
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.055)),
-      linear-gradient(135deg, rgba(0,242,220,0.055), rgba(153,62,255,0.055)),
-      rgba(8, 10, 15, 0.68);
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05)),
+      rgba(12, 14, 18, 0.76);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.14),
       0 24px 70px rgba(0,0,0,0.42);
@@ -127,20 +119,18 @@ textarea {
   }
 
   .ios-list-cell {
-    border: 1px solid rgba(119, 236, 255, 0.12);
-    background:
-      linear-gradient(135deg, rgba(0,242,220,0.035), rgba(153,62,255,0.035)),
-      rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.045);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     border-radius: 20px;
   }
 
   .brand-gradient {
-    background: linear-gradient(135deg, #12f1dc 0%, #3aa6ff 48%, #9d38ff 100%);
+    background: linear-gradient(135deg, #1fb6ff 0%, #2563eb 100%);
   }
 
   .brand-text {
-    background: linear-gradient(135deg, #18f1dc 0%, #49b4ff 48%, #a846ff 100%);
+    background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

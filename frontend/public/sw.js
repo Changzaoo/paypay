@@ -1,5 +1,5 @@
-const cacheName = "paypay-shell-v4";
-const assets = ["/", "/manifest.webmanifest", "/favicon.png", "/paypay-mark.png"];
+const cacheName = "paypay-shell-v5";
+const assets = ["/", "/manifest.webmanifest", "/favicon.png", "/paypay-mark.png", "/paypay-logo.png", "/paypay-icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(assets)));

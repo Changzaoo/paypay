@@ -25,7 +25,7 @@ function Content({ onNavigate }) {
               key={item.to}
               to={item.to}
               onClick={onNavigate}
-              className={({ isActive }) => `flex h-12 items-center gap-3 rounded-[18px] px-3 text-sm font-medium transition ${isActive ? "brand-gradient text-white shadow-[0_12px_36px_rgba(36,178,255,0.16)]" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
+              className={({ isActive }) => `flex h-12 items-center gap-3 rounded-[18px] px-3 text-sm font-medium transition ${isActive ? "brand-gradient text-white shadow-[0_12px_36px_rgba(37,99,235,0.2)]" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
             >
               <Icon size={18} />
               {item.label}

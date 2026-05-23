@@ -2,20 +2,14 @@ import { ArrowUpRight, CalendarClock, CircleDollarSign, ExternalLink, Hash, Rout
 import { Link } from "react-router-dom";
 import { useViewport } from "../hooks/useViewport";
 import { compactDate, money, shortHash, shortId } from "../lib/format";
-import { finalRoute, flowRoute, progressForStatus, stepForStatus } from "../lib/progress";
+import { finalRoute, flowRoute } from "../lib/progress";
+import FlowStepper from "./FlowStepper";
 import StatusBadge from "./StatusBadge";
 
 function ProgressLine({ item }) {
-  const progress = progressForStatus(item.status);
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3 text-xs">
-        <span className="font-medium text-slate-300">{stepForStatus(item.status)}</span>
-        <span className="font-mono text-slate-500">{progress}%</span>
-      </div>
-      <div className="timeline-track h-2.5 rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-        <div className="timeline-fill h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
-      </div>
+    <div>
+      <FlowStepper status={item.status} dense />
     </div>
   );
 }

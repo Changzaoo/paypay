@@ -1,4 +1,5 @@
 import { BadgeCheck, Banknote, Check, Circle, Clock3, CreditCard, Loader2, QrCode, Repeat2, Send, ShieldCheck, X } from "lucide-react";
+import FlowStepper from "./FlowStepper";
 
 const networkName = {
   bitcoin: "Bitcoin",
@@ -176,9 +177,7 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
             <div className="text-sm text-slate-500">{done}/{rows.length}</div>
           </div>
         </div>
-        <div className="timeline-track mt-4 h-2.5 rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-          <div className="timeline-fill h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
-        </div>
+        <FlowStepper status={rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED")} />
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 2xl:grid-cols-8">
           {rows.map((item) => {
             const info = stageInfo(item.key, flow);

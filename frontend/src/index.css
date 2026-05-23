@@ -210,7 +210,8 @@ textarea {
   }
 
   .flow-step-done,
-  .flow-step-current {
+  .flow-step-current,
+  .flow-step-held {
     border-color: color-mix(in srgb, var(--step-color) 76%, white 12%);
     background: color-mix(in srgb, var(--step-color) 24%, #050608 76%);
     color: #ffffff;
@@ -413,6 +414,11 @@ textarea {
 
   .timeline-segment-error {
     background: linear-gradient(90deg, #dc2626, #fb7185);
+  }
+
+  .timeline-paused .timeline-segment::after {
+    animation: none;
+    opacity: 0;
   }
 
   .timeline-current {

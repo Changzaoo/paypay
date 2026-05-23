@@ -30,6 +30,7 @@ const networkName = {
 const statusMeta = {
   done: { label: "Concluido", mark: <Check size={13} />, chip: "border-emerald-400/25 bg-emerald-400/10 text-emerald-100", node: "border-emerald-300/40 bg-emerald-400/15 text-emerald-100" },
   current: { label: "Agora", mark: <Loader2 size={13} className="animate-spin" />, chip: "border-blue-300/35 bg-blue-300/10 text-blue-100", node: "border-blue-300/45 bg-blue-400/15 text-blue-100" },
+  held: { label: "Parado", mark: <Circle size={13} />, chip: "border-blue-300/25 bg-blue-300/10 text-blue-100", node: "border-blue-300/35 bg-blue-400/10 text-blue-100" },
   pending: { label: "Pendente", mark: <Circle size={13} />, chip: "border-white/10 bg-white/[0.03] text-slate-500", node: "border-white/10 bg-white/[0.04] text-slate-500" },
   error: { label: "Atencao", mark: <X size={13} />, chip: "border-red-300/35 bg-red-400/10 text-red-100", node: "border-red-300/40 bg-red-400/15 text-red-100" }
 };
@@ -44,6 +45,8 @@ const segmentColors = [
   "timeline-segment-green",
   "timeline-segment-emerald"
 ];
+
+const activeStatuses = new Set(["PAYMENT_CONFIRMED", "WAITING_INTERMEDIATE_SETTLEMENT", "INTERMEDIATE_RECEIVED", "INTERMEDIATE_CONVERSION_STARTED", "INTERMEDIATE_CONVERSION_DONE", "FINAL_SHIFT_CREATED", "WAITING_FINAL_DEPOSIT", "FINAL_PROCESSING"]);
 
 const safeNetwork = (value) => networkName[String(value || "").toLowerCase()] || value || "rede final";
 
@@ -164,15 +167,17 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
   const current = rows.some((item) => item.state === "current") ? 1 : 0;
   const progress = rows.length ? Math.round(((done + current * 0.5) / rows.length) * 100) : 0;
   const context = flowContext(flow);
+  const moving = activeStatuses.has(flow?.status);
   if (variant === "compact") {
+    const compactStatus = flow?.status || rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED");
     return (
       <div className="w-full">
-        <FlowStepper status={rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED")} plain />
+        <FlowStepper status={compactStatus} plain />
       </div>
     );
   }
   return (
-    <div className="ios-surface overflow-hidden p-4">
+    <div className={`ios-surface overflow-hidden p-4 ${moving ? "" : "timeline-paused"}`}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Fluxo real</div>
@@ -192,13 +197,13 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
             {rows.map((item, index) => {
               const info = stageInfo(item.key, flow);
               const Icon = info.icon;
-              const status = statusMeta[item.state] || statusMeta.pending;
+              const status = item.state === "current" && !moving ? statusMeta.held : statusMeta[item.state] || statusMeta.pending;
               const isTop = index % 2 === 0;
               return (
                 <article key={item.key || item.label || index} className="timeline-stage">
                   <div className={`timeline-slot ${isTop ? "items-end" : "items-start"}`}>
                     {isTop && (
-                      <div className={`timeline-card ${item.state === "current" ? "timeline-current" : ""}`}>
+                      <div className={`timeline-card ${item.state === "current" && moving ? "timeline-current" : ""}`}>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-[11px] font-semibold uppercase text-blue-200">{info.eyebrow}</span>
                           <span className={`inline-flex h-6 items-center gap-1 rounded-full border px-2 text-[11px] font-medium ${status.chip}`}>{status.mark}{status.label}</span>
@@ -217,7 +222,7 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
                   </div>
                   <div className={`timeline-slot ${isTop ? "items-start" : "items-end"}`}>
                     {!isTop && (
-                      <div className={`timeline-card ${item.state === "current" ? "timeline-current" : ""}`}>
+                      <div className={`timeline-card ${item.state === "current" && moving ? "timeline-current" : ""}`}>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-[11px] font-semibold uppercase text-blue-200">{info.eyebrow}</span>
                           <span className={`inline-flex h-6 items-center gap-1 rounded-full border px-2 text-[11px] font-medium ${status.chip}`}>{status.mark}{status.label}</span>

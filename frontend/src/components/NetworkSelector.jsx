@@ -15,7 +15,7 @@ export default function NetworkSelector({ value, onChange, allowed = networks.ma
           key={item.value}
           type="button"
           onClick={() => onChange(item.value)}
-          className={`h-10 rounded-lg border px-3 text-sm font-medium transition ${value === item.value ? "border-blue-400/70 bg-blue-400/10 text-blue-100" : "border-white/10 bg-base-950 text-slate-300 hover:bg-white/5"}`}
+          className={`h-10 rounded-lg border px-3 text-sm font-medium transition ${value === item.value ? "border-blue-200/35 bg-blue-300/10 text-blue-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" : "border-white/10 bg-white/[0.045] text-slate-300 hover:bg-white/10"}`}
         >
           {item.label}
         </button>

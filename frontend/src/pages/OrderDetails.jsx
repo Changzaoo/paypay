@@ -13,7 +13,7 @@ import { useOrderStore } from "../store/orderStore";
 
 function Field({ label, value }) {
   return (
-    <div className="min-w-0 rounded-lg border border-white/10 bg-base-900 p-4">
+    <div className="min-w-0 rounded-lg border border-white/10 bg-white/[0.055] p-4 shadow-glass backdrop-blur-xl">
       <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</div>
       <div className="mt-2 break-words text-sm text-slate-200">{value || "-"}</div>
     </div>
@@ -40,15 +40,16 @@ export default function OrderDetails() {
   const canRetry = account?.isAdmin && ["FAILED", "WAITING_INTERMEDIATE_SETTLEMENT", "WAITING_MANUAL_STEP", "FINAL_SHIFT_CREATED", "WAITING_FINAL_DEPOSIT", "FINAL_PROCESSING"].includes(current.status);
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <div className="font-mono text-sm text-slate-500">{current.publicId}</div>
-          <h2 className="mt-1 text-xl font-semibold text-white">{money(current.amountBrl)}</h2>
+          <h2 className="mt-1 text-3xl font-semibold tracking-tight text-white">{money(current.amountBrl)}</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge value={current.status} />
           {account?.isAdmin && (
-            <button type="button" onClick={() => setModal(true)} className="inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-base-850 px-3 text-sm font-medium text-slate-100 transition hover:bg-white/5">
+            <button type="button" onClick={() => setModal(true)} className="inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-medium text-slate-100 transition hover:bg-white/10">
               <Pencil size={16} />
               Marcar etapa
             </button>
@@ -56,10 +57,12 @@ export default function OrderDetails() {
           {canRetry && <RetryButton onRetry={() => retry(current.publicId)} />}
         </div>
       </div>
+      </div>
       <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
         <section className="space-y-4">
-          <div className="rounded-lg border border-white/10 bg-base-900 p-5">
-            <h3 className="mb-4 text-base font-semibold text-white">Progresso</h3>
+          <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+            <h3 className="mb-1 text-base font-semibold text-white">Mapa visual</h3>
+            <p className="mb-4 text-sm text-slate-500">Cada cartao mostra a etapa atual da operacao.</p>
             <Timeline items={current.timeline} />
           </div>
           {current.error && <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200">{current.error}</div>}
@@ -81,7 +84,7 @@ export default function OrderDetails() {
           </div>
           <CopyBox value={current.input?.qrCode} label="Copia e cola" />
           {current.settlement?.explorerUrl && (
-            <a href={current.settlement.explorerUrl} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-base-850 px-3 text-sm font-medium text-slate-100 transition hover:bg-white/5">
+            <a href={current.settlement.explorerUrl} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-medium text-slate-100 transition hover:bg-white/10">
               <ExternalLink size={16} />
               Comprovante
             </a>

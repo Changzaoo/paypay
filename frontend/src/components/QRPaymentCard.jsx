@@ -8,8 +8,8 @@ export default function QRPaymentCard({ order }) {
   const expiresAt = order?.expiresAt || order?.input?.expiresAt;
   const amount = order?.amountBrl;
   return (
-    <div className="grid gap-5 rounded-lg border border-white/10 bg-base-900 p-5 shadow-panel lg:grid-cols-[220px_1fr]">
-      <div className="grid place-items-center rounded-lg border border-white/10 bg-white p-3">
+    <div className="grid gap-5 rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl lg:grid-cols-[220px_1fr]">
+      <div className="grid place-items-center rounded-lg border border-white/20 bg-white p-3 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
         {qrCode ? <QRCodeCanvas value={qrCode} size={190} includeMargin /> : qrImageUrl ? <img src={qrImageUrl} alt="QR" className="h-48 w-48 object-contain" /> : <div className="grid h-48 w-48 place-items-center text-sm text-slate-500">QR</div>}
       </div>
       <div className="min-w-0 space-y-4">

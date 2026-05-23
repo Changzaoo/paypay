@@ -19,7 +19,7 @@ export default function Layout() {
     if (viewport.isDesktop) setMenuOpen(false);
   }, [viewport.isDesktop]);
   return (
-    <div className="min-h-screen bg-base-950" data-screen={viewport.kind}>
+    <div className="min-h-screen bg-transparent" data-screen={viewport.kind}>
       <Sidebar mode="desktop" />
       <Sidebar mode="mobile" open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="min-h-screen lg:pl-64">
@@ -28,7 +28,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-base-950/95 backdrop-blur lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-base-950/80 shadow-glass backdrop-blur-2xl lg:hidden">
         {mobile.map((item) => {
           const Icon = item.icon;
           return (

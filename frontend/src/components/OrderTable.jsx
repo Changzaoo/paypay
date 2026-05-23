@@ -11,7 +11,7 @@ export default function OrderTable({ items = [] }) {
     return (
       <div className="space-y-3">
         {rows.map((item) => (
-          <article key={item.id} className="rounded-lg border border-white/10 bg-base-900 p-4">
+          <article key={item.id} className="rounded-lg border border-white/10 bg-white/[0.055] p-4 shadow-glass backdrop-blur-xl">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="font-mono text-xs text-slate-500">{shortId(item.publicId)}</div>
@@ -37,23 +37,23 @@ export default function OrderTable({ items = [] }) {
                 <div className="mt-1 font-mono text-xs text-slate-200">{shortHash(item.settlement?.txid)}</div>
               </div>
             </div>
-            <Link to={`/orders/${item.publicId || item.id}`} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-base-850 text-sm font-medium text-slate-100 transition hover:bg-white/5">
+            <Link to={`/orders/${item.publicId || item.id}`} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] text-sm font-medium text-slate-100 transition hover:bg-white/10">
               Detalhes
               <ExternalLink size={16} />
             </Link>
           </article>
         ))}
         {!rows.length && (
-          <div className="rounded-lg border border-white/10 bg-base-900 px-4 py-10 text-center text-sm text-slate-500">Nenhuma operacao encontrada</div>
+          <div className="rounded-lg border border-white/10 bg-white/[0.055] px-4 py-10 text-center text-sm text-slate-500">Nenhuma operacao encontrada</div>
         )}
       </div>
     );
   }
   return (
-    <div className="overflow-hidden rounded-lg border border-white/10 bg-base-900">
+    <div className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.055] shadow-glass backdrop-blur-xl">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[920px] text-left text-sm">
-          <thead className="border-b border-white/10 bg-white/[0.02] text-xs uppercase tracking-wide text-slate-500">
+          <thead className="border-b border-white/10 bg-white/[0.04] text-xs uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
               <th className="px-4 py-3 font-medium">Valor</th>

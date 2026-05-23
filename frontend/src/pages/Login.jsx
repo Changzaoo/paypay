@@ -21,10 +21,10 @@ export default function Login() {
     }
   };
   return (
-    <div className="grid min-h-screen place-items-center bg-base-950 px-4">
-      <form onSubmit={submit} className="w-full max-w-md rounded-lg border border-white/10 bg-base-900 p-6 shadow-panel">
+    <div className="grid min-h-screen place-items-center bg-transparent px-4">
+      <form onSubmit={submit} className="w-full max-w-md rounded-lg border border-white/10 bg-white/[0.055] p-6 shadow-glass backdrop-blur-xl">
         <div className="mb-8">
-          <div className="mb-4 grid h-12 w-12 place-items-center rounded-lg border border-white/10 bg-base-950 text-blue-200">
+          <div className="mb-4 grid h-12 w-12 place-items-center rounded-lg border border-white/10 bg-white/[0.06] text-blue-100">
             <Lock size={21} />
           </div>
           <h1 className="text-2xl font-semibold text-white">Acesso interno</h1>
@@ -38,7 +38,7 @@ export default function Login() {
               required
               value={form.email}
               onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-              className="h-11 w-full rounded-lg border border-white/10 bg-base-950 px-3 text-sm text-white outline-none transition focus:border-blue-400/60"
+              className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.045] px-3 text-sm text-white outline-none transition focus:border-blue-300/60"
             />
           </label>
           <label className="space-y-2">
@@ -48,14 +48,14 @@ export default function Login() {
               required
               value={form.password}
               onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-              className="h-11 w-full rounded-lg border border-white/10 bg-base-950 px-3 text-sm text-white outline-none transition focus:border-blue-400/60"
+              className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.045] px-3 text-sm text-white outline-none transition focus:border-blue-300/60"
             />
           </label>
           {error && <div className="rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-sm text-red-200">{error}</div>}
           <button
             type="submit"
             disabled={loading || busy}
-            className="h-11 w-full rounded-lg bg-blue-500 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:opacity-60"
+            className="h-11 w-full rounded-lg bg-white text-sm font-semibold text-base-950 transition hover:bg-slate-100 disabled:opacity-60"
           >
             Entrar
           </button>

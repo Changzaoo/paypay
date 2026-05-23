@@ -57,9 +57,9 @@ export default function Sidebar({ mode = "desktop", open = false, onClose }) {
           type="button"
           aria-label="Fechar menu"
           onClick={onClose}
-          className={`absolute inset-0 bg-black/70 transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-black/55 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
         />
-        <aside className={`absolute inset-y-0 left-0 flex w-[min(84vw,320px)] flex-col border-r border-white/10 bg-base-950 shadow-panel transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <aside className={`absolute inset-y-0 left-0 flex w-[min(84vw,320px)] flex-col border-r border-white/10 bg-base-950/85 shadow-glass backdrop-blur-2xl transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"}`}>
           <button
             type="button"
             onClick={onClose}
@@ -74,7 +74,7 @@ export default function Sidebar({ mode = "desktop", open = false, onClose }) {
     );
   }
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/10 bg-base-950 lg:flex lg:flex-col">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/10 bg-base-950/72 shadow-glass backdrop-blur-2xl lg:flex lg:flex-col">
       <Content />
     </aside>
   );

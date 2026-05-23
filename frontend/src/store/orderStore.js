@@ -1,11 +1,10 @@
 import { create } from "zustand";
-import { createOrder, getConfig, getOrder, getOrders, getOrderStatus, getSettings, getSettlementOptions, manualOrder, ping, retryOrder, saveSettings } from "../lib/api";
+import { createOrder, getConfig, getOrder, getOrders, getOrderStatus, getSettlementOptions, manualOrder, ping, retryOrder } from "../lib/api";
 
 export const useOrderStore = create((set, get) => ({
   items: [],
   current: null,
   config: null,
-  settings: null,
   settlementOptions: null,
   loading: false,
   error: "",
@@ -83,16 +82,6 @@ export const useOrderStore = create((set, get) => ({
       return null;
     }
   },
-  loadSettings: async () => {
-    try {
-      const settings = await getSettings();
-      set({ settings });
-      return settings;
-    } catch (error) {
-      set({ error: error.response?.data?.error || "Falha ao carregar" });
-      return null;
-    }
-  },
   loadSettlementOptions: async () => {
     try {
       const data = await getSettlementOptions();
@@ -102,11 +91,6 @@ export const useOrderStore = create((set, get) => ({
       set({ error: error.response?.data?.error || "Falha ao carregar" });
       return null;
     }
-  },
-  saveSettings: async (payload) => {
-    const settings = await saveSettings(payload);
-    set({ settings });
-    return settings;
   },
   ping: async () => {
     return ping();

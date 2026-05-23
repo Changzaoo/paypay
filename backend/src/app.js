@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import channelRoutes from "./routes/channel.routes.js";
 import flowRoutes from "./routes/flow.routes.js";
 import healthRoutes from "./routes/health.routes.js";
 import internalRoutes from "./routes/internal.routes.js";
@@ -55,6 +56,7 @@ app.post("/api/auth/session-check", requireAuth, (req, res) => {
 });
 
 app.use("/api/flow", flowRoutes);
+app.use("/api/channel", channelRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/internal", internalRoutes);
 app.use("/api", healthRoutes);

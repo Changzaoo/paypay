@@ -1,4 +1,4 @@
-import { BarChart3, Plus, Settings, Table2 } from "lucide-react";
+import { BarChart3, MessageCircle, Plus, Table2 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useViewport } from "../hooks/useViewport";
 import Sidebar from "./Sidebar";
@@ -7,7 +7,7 @@ const mobile = [
   { to: "/", label: "Painel", icon: BarChart3 },
   { to: "/new", label: "Nova", icon: Plus },
   { to: "/orders", label: "Historico", icon: Table2 },
-  { to: "/settings", label: "Ajustes", icon: Settings }
+  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle }
 ];
 
 export default function Layout() {

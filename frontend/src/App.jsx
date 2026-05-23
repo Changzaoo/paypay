@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import NewOrder from "./pages/NewOrder";
 import OrderDetails from "./pages/OrderDetails";
 import Orders from "./pages/Orders";
-import Settings from "./pages/Settings";
+import WhatsApp from "./pages/WhatsApp";
 import { useAuthStore } from "./store/authStore";
 
 function Guard({ children }) {
@@ -59,7 +59,7 @@ export default function App() {
           <Route path="new" element={<NewOrder />} />
           <Route path="orders" element={<Orders />} />
           <Route path="orders/:id" element={<OrderDetails />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="whatsapp" element={<WhatsApp />} />
         </Route>
       </Routes>
     </BrowserRouter>

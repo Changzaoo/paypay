@@ -128,3 +128,57 @@ export const getSetting = async (key, fallback = null) => {
 export const upsertSetting = async (key, value) => {
   return unwrap(await getAdminClient().from("internal_settings").upsert({ key, value }, { onConflict: "key" }).select("*").single());
 };
+
+export const listChannelThreads = async (filters = {}) => {
+  let query = getAdminClient().from("internal_threads").select("*").order("last_event_at", { ascending: false }).limit(120);
+  if (filters.search) {
+    const term = String(filters.search).replace(/[^a-zA-Z0-9@.\-_: +]/g, "");
+    query = query.or(`display_name.ilike.%${term}%,address.ilike.%${term}%,last_text.ilike.%${term}%`);
+  }
+  return unwrap(await query);
+};
+
+export const getChannelThread = async (id) => {
+  let query = getAdminClient().from("internal_threads").select("*");
+  query = isUuid(id) ? query.eq("id", id) : query.eq("channel_ref", String(id));
+  const data = unwrap(await query.maybeSingle());
+  if (!data) {
+    const error = new Error("Conversa nao encontrada");
+    error.status = 404;
+    throw error;
+  }
+  return data;
+};
+
+export const upsertChannelThread = async (value) => {
+  return unwrap(await getAdminClient()
+    .from("internal_threads")
+    .upsert(value, { onConflict: "channel_ref" })
+    .select("*")
+    .single());
+};
+
+export const updateChannelThread = async (id, value) => {
+  return unwrap(await getAdminClient().from("internal_threads").update(value).eq("id", id).select("*").single());
+};
+
+export const listChannelMessages = async (threadId) => {
+  return unwrap(await getAdminClient()
+    .from("internal_messages")
+    .select("*")
+    .eq("thread_id", threadId)
+    .order("created_at", { ascending: true })
+    .limit(250));
+};
+
+export const insertChannelMessage = async (value) => {
+  const result = await getAdminClient().from("internal_messages").insert(value).select("*").single();
+  if (result.error?.code === "23505" && value.provider_ref) {
+    return unwrap(await getAdminClient().from("internal_messages").select("*").eq("provider_ref", value.provider_ref).single());
+  }
+  return unwrap(result);
+};
+
+export const updateChannelMessageByProviderRef = async (providerRef, value) => {
+  return unwrap(await getAdminClient().from("internal_messages").update(value).eq("provider_ref", providerRef).select("*").maybeSingle());
+};

@@ -75,7 +75,7 @@ router.get("/health/deps", async (req, res) => {
   const tables = {};
   let db = false;
   try {
-    for (const table of ["internal_orders", "internal_settings", "internal_events", "internal_jobs"]) {
+    for (const table of ["internal_orders", "internal_settings", "internal_events", "internal_jobs", "internal_threads", "internal_messages"]) {
       const { error } = await getAdminClient().from(table).select("id").limit(1);
       tables[table] = error ? error.code || "error" : "ok";
     }

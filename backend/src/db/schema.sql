@@ -72,12 +72,45 @@ create table if not exists internal_settings (
   updated_at timestamptz default now()
 );
 
+create table if not exists internal_threads (
+  id uuid primary key default gen_random_uuid(),
+  provider text,
+  channel_ref text unique,
+  display_name text,
+  address text,
+  last_text text,
+  last_event_at timestamptz default now(),
+  unread_count int default 0,
+  state text default 'open',
+  tags jsonb default '[]'::jsonb,
+  raw jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists internal_messages (
+  id uuid primary key default gen_random_uuid(),
+  thread_id uuid references internal_threads(id) on delete cascade,
+  provider text,
+  provider_ref text unique,
+  direction text,
+  kind text,
+  body text,
+  media_url text,
+  status text,
+  payload jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 create unique index if not exists internal_orders_input_provider_id_uq on internal_orders(input_provider_id) where input_provider_id is not null;
 create index if not exists internal_orders_operator_idx on internal_orders(operator_id);
 create index if not exists internal_orders_status_idx on internal_orders(status);
 create index if not exists internal_orders_created_at_idx on internal_orders(created_at desc);
 create index if not exists internal_jobs_status_run_after_idx on internal_jobs(status, run_after);
 create index if not exists internal_events_order_idx on internal_events(order_id);
+create index if not exists internal_threads_last_event_idx on internal_threads(last_event_at desc);
+create index if not exists internal_messages_thread_idx on internal_messages(thread_id, created_at);
 
 create or replace function set_updated_at()
 returns trigger as $$
@@ -102,10 +135,22 @@ create trigger internal_settings_updated_at
 before update on internal_settings
 for each row execute function set_updated_at();
 
+drop trigger if exists internal_threads_updated_at on internal_threads;
+create trigger internal_threads_updated_at
+before update on internal_threads
+for each row execute function set_updated_at();
+
+drop trigger if exists internal_messages_updated_at on internal_messages;
+create trigger internal_messages_updated_at
+before update on internal_messages
+for each row execute function set_updated_at();
+
 alter table internal_orders enable row level security;
 alter table internal_events enable row level security;
 alter table internal_jobs enable row level security;
 alter table internal_settings enable row level security;
+alter table internal_threads enable row level security;
+alter table internal_messages enable row level security;
 
 drop policy if exists internal_orders_select_own on internal_orders;
 create policy internal_orders_select_own on internal_orders
@@ -128,6 +173,18 @@ using (
 
 drop policy if exists internal_settings_select_none on internal_settings;
 create policy internal_settings_select_none on internal_settings
+for select
+to authenticated
+using (false);
+
+drop policy if exists internal_threads_select_none on internal_threads;
+create policy internal_threads_select_none on internal_threads
+for select
+to authenticated
+using (false);
+
+drop policy if exists internal_messages_select_none on internal_messages;
+create policy internal_messages_select_none on internal_messages
 for select
 to authenticated
 using (false);

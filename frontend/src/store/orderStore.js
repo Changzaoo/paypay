@@ -22,10 +22,11 @@ export const useOrderStore = create((set, get) => ({
     set({ loading: true, error: "" });
     try {
       const items = await getOrders(get().filters);
-      set({ items, loading: false });
-      return items;
+      const next = Array.isArray(items) ? items : [];
+      set({ items: next, loading: false });
+      return next;
     } catch (error) {
-      set({ loading: false, error: error.response?.data?.error || "Falha ao carregar" });
+      set({ items: [], loading: false, error: error.response?.data?.error || "Falha ao carregar" });
       return [];
     }
   },

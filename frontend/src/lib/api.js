@@ -20,7 +20,7 @@ export const checkSession = async () => {
 
 export const getOrders = async (params) => {
   const { data } = await api.get("/api/flow", { params });
-  return data.items;
+  return Array.isArray(data.items) ? data.items : [];
 };
 
 export const createOrder = async (payload) => {

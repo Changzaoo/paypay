@@ -9,12 +9,14 @@ export const useAuthStore = create((set, get) => ({
   error: "",
   init: async () => {
     const { data } = await supabase.auth.getSession();
-    set({ session: data.session, loading: false });
+    set({ session: data.session, loading: Boolean(data.session) });
     if (data.session) await get().sync();
+    set({ loading: false });
     supabase.auth.onAuthStateChange(async (event, session) => {
-      set({ session, loading: false });
+      set({ session, loading: Boolean(session) });
       if (session) await get().sync();
       if (!session) set({ account: null });
+      set({ loading: false });
     });
   },
   sync: async () => {
@@ -34,8 +36,9 @@ export const useAuthStore = create((set, get) => ({
       set({ loading: false, error: "Acesso não autorizado" });
       return null;
     }
-    set({ session: data.session, loading: false });
+    set({ session: data.session });
     await get().sync();
+    set({ loading: false });
     return data.session;
   },
   signOut: async () => {

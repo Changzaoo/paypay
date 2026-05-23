@@ -5,8 +5,9 @@ import { money } from "../lib/format";
 import { useOrderStore } from "../store/orderStore";
 
 export default function Dashboard() {
-  const items = useOrderStore((state) => state.items);
+  const rawItems = useOrderStore((state) => state.items);
   const load = useOrderStore((state) => state.load);
+  const items = Array.isArray(rawItems) ? rawItems : [];
   useEffect(() => {
     load();
   }, [load]);

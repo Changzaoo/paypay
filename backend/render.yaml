@@ -9,3 +9,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
+      - key: FRONTEND_PUBLIC_URL
+        value: https://paypay-ivory.vercel.app
+      - key: BACKEND_PUBLIC_URL
+        value: https://paypay-4836.onrender.com

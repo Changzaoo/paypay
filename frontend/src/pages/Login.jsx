@@ -26,7 +26,7 @@ export default function Login() {
       <form onSubmit={submit} className="ios-surface w-full max-w-md p-6">
         <div className="mb-8">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <BrandMark />
+            <BrandMark size="lg" />
             <div className="ios-control grid h-12 w-12 place-items-center text-cyan-200">
               <Lock size={21} />
             </div>

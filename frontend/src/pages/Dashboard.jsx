@@ -37,7 +37,7 @@ export default function Dashboard() {
           <div className="text-sm font-medium text-slate-500">Visao geral</div>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Operacoes</h1>
         </div>
-        <BrandMark className="h-12" />
+        <BrandMark size="lg" />
       </section>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard label="Total hoje" value={money(stats.totalToday)} accent="green" />

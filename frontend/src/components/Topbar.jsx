@@ -32,7 +32,7 @@ export default function Topbar({ onMenu }) {
           </div>
         </div>
         <div className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 sm:block">
-          <BrandMark className="h-8 opacity-90" />
+          <BrandMark size="sm" className="opacity-90" />
         </div>
         <NavLink to="/new" className="ios-button-primary inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold transition hover:bg-slate-100">
           <Plus size={17} />

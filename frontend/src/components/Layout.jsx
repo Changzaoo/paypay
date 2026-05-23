@@ -37,7 +37,7 @@ export default function Layout() {
             <NavLink key={item.to} to={item.to} className={({ isActive }) => `flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition ${isActive ? "text-white" : "text-slate-500"}`}>
               {({ isActive }) => (
                 <>
-                  <span className={`grid h-8 w-10 place-items-center rounded-full transition ${isActive ? "bg-white text-base-950" : "text-slate-500"}`}>
+                  <span className={`grid h-8 w-10 place-items-center rounded-full transition ${isActive ? "brand-gradient text-white" : "text-slate-500"}`}>
                     <Icon size={18} />
                   </span>
                   {item.label}

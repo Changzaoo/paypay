@@ -1,4 +1,4 @@
-const cacheName = "paypay-shell-v2";
+const cacheName = "paypay-shell-v3";
 const assets = ["/", "/manifest.webmanifest", "/favicon.png"];
 
 self.addEventListener("install", (event) => {

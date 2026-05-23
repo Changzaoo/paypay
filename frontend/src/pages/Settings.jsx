@@ -113,7 +113,7 @@ export default function Settings() {
                 key={item}
                 type="button"
                 onClick={() => account?.isAdmin && setMode(item)}
-                className={`h-10 min-w-28 rounded-full px-3 text-sm font-semibold transition ${mode === item ? "bg-white text-base-950" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
+                className={`h-10 min-w-28 rounded-full px-3 text-sm font-semibold transition ${mode === item ? "brand-gradient text-white" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
               >
                 {item === "manual" ? "Manual" : "Automático"}
               </button>

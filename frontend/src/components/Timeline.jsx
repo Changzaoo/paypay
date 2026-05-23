@@ -69,7 +69,7 @@ export default function Timeline({ items = [] }) {
           <div className="text-right text-sm text-slate-400">{done} de {rows.length} etapas</div>
         </div>
         <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-          <div className="h-full rounded-full bg-[linear-gradient(90deg,#9fd7ff,#7cf7d4,#f8f8ff)] transition-all duration-500" style={{ width: `${progress}%` }} />
+          <div className="h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">

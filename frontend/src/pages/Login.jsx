@@ -1,6 +1,7 @@
 import { Lock } from "lucide-react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import BrandMark from "../components/BrandMark";
 import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
@@ -24,8 +25,11 @@ export default function Login() {
     <div className="grid min-h-screen place-items-center bg-transparent px-4">
       <form onSubmit={submit} className="ios-surface w-full max-w-md p-6">
         <div className="mb-8">
-          <div className="ios-control mb-4 grid h-12 w-12 place-items-center text-blue-100">
-            <Lock size={21} />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <BrandMark />
+            <div className="ios-control grid h-12 w-12 place-items-center text-cyan-200">
+              <Lock size={21} />
+            </div>
           </div>
           <h1 className="text-2xl font-semibold text-white">Acesso interno</h1>
           <p className="mt-2 text-sm text-slate-500">Entre com uma conta autorizada.</p>

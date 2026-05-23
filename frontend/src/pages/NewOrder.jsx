@@ -1,6 +1,7 @@
 import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, Mail, Phone, RotateCcw, User, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import BrandMark from "../components/BrandMark";
 import QRPaymentCard from "../components/QRPaymentCard";
 import StatusBadge from "../components/StatusBadge";
 import { useOrderStore } from "../store/orderStore";
@@ -91,9 +92,12 @@ export default function NewOrder() {
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
       <form onSubmit={submit} className="ios-surface overflow-hidden">
-        <div className="border-b border-white/10 p-5">
-          <div className="text-sm font-medium text-slate-500">Entrada</div>
-          <h2 className="mt-1 text-3xl font-semibold tracking-tight text-white">Nova operacao</h2>
+        <div className="flex items-center justify-between gap-4 border-b border-white/10 p-5">
+          <div>
+            <div className="text-sm font-medium text-slate-500">Entrada</div>
+            <h2 className="mt-1 text-3xl font-semibold tracking-tight text-white">Nova operacao</h2>
+          </div>
+          <BrandMark compact />
         </div>
         <div className="grid gap-5 p-5">
           <div className="grid gap-4 md:grid-cols-2">
@@ -118,7 +122,7 @@ export default function NewOrder() {
                   key={asset}
                   type="button"
                   onClick={() => changeAsset(asset)}
-                  className={`h-12 rounded-full border text-sm font-semibold transition ${form.outputAsset === asset ? "border-white/30 bg-white text-base-950 shadow-[0_12px_36px_rgba(255,255,255,0.12)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
+                  className={`h-12 rounded-full border text-sm font-semibold transition ${form.outputAsset === asset ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(36,178,255,0.16)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
                 >
                   {assetText[asset]}
                 </button>
@@ -130,7 +134,7 @@ export default function NewOrder() {
                   key={network}
                   type="button"
                   onClick={() => change("outputNetwork", network)}
-                  className={`h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
+                  className={`h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network ? "border-cyan-200/35 bg-cyan-300/10 text-cyan-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
                 >
                   {networkText[network]}
                 </button>

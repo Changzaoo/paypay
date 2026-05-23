@@ -1,6 +1,7 @@
 import { Menu, Plus } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import BrandMark from "./BrandMark";
 
 const names = {
   "/": "Painel",
@@ -15,7 +16,7 @@ export default function Topbar({ onMenu }) {
   const title = names[location.pathname] || "Detalhes";
   return (
     <header className="sticky top-0 z-20 px-3 pt-3 sm:px-4 lg:px-8">
-      <div className="ios-surface mx-auto flex h-14 max-w-[1600px] items-center justify-between px-3 sm:h-16 sm:px-4">
+      <div className="ios-surface relative mx-auto flex h-14 max-w-[1600px] items-center justify-between px-3 sm:h-16 sm:px-4">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -29,6 +30,9 @@ export default function Topbar({ onMenu }) {
             <div className="truncate text-base font-semibold text-white sm:text-lg">{title}</div>
             <div className="truncate text-xs text-slate-500">{account?.email || ""}</div>
           </div>
+        </div>
+        <div className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 sm:block">
+          <BrandMark className="h-8 opacity-90" />
         </div>
         <NavLink to="/new" className="ios-button-primary inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold transition hover:bg-slate-100">
           <Plus size={17} />

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import BrandMark from "../components/BrandMark";
 import OrderTable from "../components/OrderTable";
 import StatCard from "../components/StatCard";
 import { money } from "../lib/format";
@@ -31,9 +32,12 @@ export default function Dashboard() {
   }, [items]);
   return (
     <div className="space-y-6">
-      <section className="ios-surface p-5">
-        <div className="text-sm font-medium text-slate-500">Visao geral</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Operacoes</h1>
+      <section className="ios-surface flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-sm font-medium text-slate-500">Visao geral</div>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Operacoes</h1>
+        </div>
+        <BrandMark className="h-12" />
       </section>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard label="Total hoje" value={money(stats.totalToday)} accent="green" />

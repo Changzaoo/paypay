@@ -1,6 +1,7 @@
 import { BarChart3, LogOut, Plus, Settings, Table2, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import BrandMark from "./BrandMark";
 
 const links = [
   { to: "/", label: "Painel", icon: BarChart3 },
@@ -14,7 +15,7 @@ function Content({ onNavigate }) {
   return (
     <>
       <div className="flex h-20 items-center border-b border-white/10 px-5">
-        <div className="text-lg font-semibold text-white">Operacoes</div>
+        <BrandMark />
       </div>
       <nav className="flex-1 space-y-2 px-3 py-4">
         {links.map((item) => {
@@ -24,7 +25,7 @@ function Content({ onNavigate }) {
               key={item.to}
               to={item.to}
               onClick={onNavigate}
-              className={({ isActive }) => `flex h-12 items-center gap-3 rounded-[18px] px-3 text-sm font-medium transition ${isActive ? "bg-white text-base-950 shadow-[0_12px_36px_rgba(255,255,255,0.12)]" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
+              className={({ isActive }) => `flex h-12 items-center gap-3 rounded-[18px] px-3 text-sm font-medium transition ${isActive ? "brand-gradient text-white shadow-[0_12px_36px_rgba(36,178,255,0.16)]" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
             >
               <Icon size={18} />
               {item.label}

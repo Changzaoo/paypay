@@ -12,7 +12,7 @@ export default function CopyBox({ value, label = "Código" }) {
   return (
     <div className="space-y-2">
       <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</div>
-      <div className="flex min-h-12 items-stretch overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+      <div className="ios-control flex min-h-12 items-stretch overflow-hidden">
         <div className="min-w-0 flex-1 px-3 py-3 text-sm text-slate-200">
           <div className="truncate">{value || "-"}</div>
         </div>

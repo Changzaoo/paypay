@@ -14,13 +14,13 @@ export default function Topbar({ onMenu }) {
   const account = useAuthStore((state) => state.account);
   const title = names[location.pathname] || "Detalhes";
   return (
-    <header className="sticky top-0 z-20 border-b border-white/10 bg-base-950/72 shadow-glass backdrop-blur-2xl">
-      <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-4 lg:px-8">
+    <header className="sticky top-0 z-20 px-3 pt-3 sm:px-4 lg:px-8">
+      <div className="ios-surface mx-auto flex h-14 max-w-[1600px] items-center justify-between px-3 sm:h-16 sm:px-4">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
             onClick={onMenu}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition hover:bg-white/10 hover:text-white lg:hidden"
+            className="ios-button-secondary grid h-10 w-10 place-items-center text-slate-300 transition hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Abrir menu"
           >
             <Menu size={18} />
@@ -30,7 +30,7 @@ export default function Topbar({ onMenu }) {
             <div className="truncate text-xs text-slate-500">{account?.email || ""}</div>
           </div>
         </div>
-        <NavLink to="/new" className="inline-flex h-10 items-center gap-2 rounded-lg bg-white px-3 text-sm font-semibold text-base-950 shadow-[0_12px_36px_rgba(255,255,255,0.12)] transition hover:bg-slate-100">
+        <NavLink to="/new" className="ios-button-primary inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold transition hover:bg-slate-100">
           <Plus size={17} />
           <span className="hidden sm:inline">Nova</span>
         </NavLink>

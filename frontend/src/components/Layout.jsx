@@ -22,19 +22,25 @@ export default function Layout() {
     <div className="min-h-screen bg-transparent" data-screen={viewport.kind}>
       <Sidebar mode="desktop" />
       <Sidebar mode="mobile" open={menuOpen} onClose={() => setMenuOpen(false)} />
-      <div className="min-h-screen lg:pl-64">
+      <div className="min-h-screen lg:pl-72">
         <Topbar onMenu={() => setMenuOpen(true)} />
-        <main className="px-3 py-4 pb-24 sm:px-4 sm:py-5 lg:px-8 lg:py-6">
+        <main className="px-3 py-4 pb-28 sm:px-4 sm:py-5 lg:px-8 lg:py-7">
           <Outlet />
         </main>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-base-950/80 shadow-glass backdrop-blur-2xl lg:hidden">
+      <nav className="ios-dock fixed inset-x-3 bottom-3 z-30 grid grid-cols-4 px-2 lg:hidden">
         {mobile.map((item) => {
           const Icon = item.icon;
           return (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => `flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium ${isActive ? "text-white" : "text-slate-500"}`}>
-              <Icon size={18} />
-              {item.label}
+            <NavLink key={item.to} to={item.to} className={({ isActive }) => `flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition ${isActive ? "text-white" : "text-slate-500"}`}>
+              {({ isActive }) => (
+                <>
+                  <span className={`grid h-8 w-10 place-items-center rounded-full transition ${isActive ? "bg-white text-base-950" : "text-slate-500"}`}>
+                    <Icon size={18} />
+                  </span>
+                  {item.label}
+                </>
+              )}
             </NavLink>
           );
         })}

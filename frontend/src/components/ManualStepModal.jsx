@@ -25,7 +25,7 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
   };
   return (
     <div className="fixed inset-0 z-50 grid items-end bg-black/70 px-3 py-3 sm:place-items-center sm:px-4">
-      <form onSubmit={submit} className="max-h-[calc(100vh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-lg border border-white/10 bg-base-900 p-5 shadow-panel">
+      <form onSubmit={submit} className="ios-surface max-h-[calc(100vh-1.5rem)] w-full max-w-lg overflow-y-auto p-5">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <div className="text-lg font-semibold text-white">Atualizar etapa</div>
@@ -45,7 +45,7 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
               required
               value={form.intermediateReceivedAmount}
               onChange={(event) => change("intermediateReceivedAmount", event.target.value)}
-              className="h-11 w-full rounded-lg border border-white/10 bg-base-950 px-3 text-sm text-white outline-none focus:border-blue-400/60"
+              className="ios-control h-11 w-full px-3 text-sm text-white outline-none"
             />
           </label>
           <label className="space-y-2">
@@ -54,7 +54,7 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
               required
               value={form.intermediateTxid}
               onChange={(event) => change("intermediateTxid", event.target.value)}
-              className="h-11 w-full rounded-lg border border-white/10 bg-base-950 px-3 text-sm text-white outline-none focus:border-blue-400/60"
+              className="ios-control h-11 w-full px-3 text-sm text-white outline-none"
             />
           </label>
           <label className="space-y-2">
@@ -63,13 +63,13 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
               value={form.intermediateNote}
               onChange={(event) => change("intermediateNote", event.target.value)}
               rows={3}
-              className="w-full resize-none rounded-lg border border-white/10 bg-base-950 px-3 py-3 text-sm text-white outline-none focus:border-blue-400/60"
+              className="ios-control w-full resize-none px-3 py-3 text-sm text-white outline-none"
             />
           </label>
         </div>
         <div className="mt-5 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="h-10 rounded-lg border border-white/10 px-4 text-sm font-medium text-slate-300 transition hover:bg-white/5">Cancelar</button>
-          <button type="submit" disabled={loading} className="h-10 rounded-lg bg-blue-500 px-4 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:opacity-60">
+          <button type="button" onClick={onClose} className="ios-button-secondary h-10 px-4 text-sm font-medium text-slate-300 transition hover:bg-white/10">Cancelar</button>
+          <button type="submit" disabled={loading} className="ios-button-primary h-10 px-4 text-sm font-semibold transition hover:bg-slate-100 disabled:opacity-60">
             Salvar
           </button>
         </div>

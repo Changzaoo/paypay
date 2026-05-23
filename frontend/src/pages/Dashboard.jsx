@@ -31,9 +31,9 @@ export default function Dashboard() {
   }, [items]);
   return (
     <div className="space-y-6">
-      <section className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+      <section className="ios-surface p-5">
         <div className="text-sm font-medium text-slate-500">Visao geral</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Operacoes em tempo real</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Operacoes</h1>
       </section>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard label="Total hoje" value={money(stats.totalToday)} accent="green" />

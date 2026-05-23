@@ -7,7 +7,7 @@ export default function AddressInput({ label = "Endereço", value, onChange, pla
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         rows={3}
-        className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.045] px-3 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-blue-300/60"
+        className="ios-control w-full resize-none px-3 py-3 text-sm text-white outline-none transition placeholder:text-slate-600"
       />
     </label>
   );

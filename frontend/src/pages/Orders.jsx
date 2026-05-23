@@ -18,7 +18,7 @@ export default function Orders() {
           <h2 className="text-lg font-semibold text-white">Operações</h2>
           <p className="mt-1 text-sm text-slate-500">Busca e acompanhamento do histórico.</p>
         </div>
-        <button type="button" onClick={load} className="inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm font-medium text-slate-100 transition hover:bg-white/10">
+        <button type="button" onClick={load} className="ios-button-secondary inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:bg-white/10">
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           Atualizar
         </button>

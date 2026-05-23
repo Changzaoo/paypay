@@ -54,14 +54,14 @@ export default function Settings() {
   };
   return (
     <div className="space-y-6">
-      <section className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+      <section className="ios-surface p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-white">Configurações</h2>
             <p className="mt-1 text-sm text-slate-500">Parâmetros operacionais do painel.</p>
           </div>
           {account?.isAdmin && (
-            <button type="button" onClick={save} className="inline-flex h-10 items-center gap-2 rounded-lg bg-white px-3 text-sm font-semibold text-base-950 transition hover:bg-slate-100">
+            <button type="button" onClick={save} className="ios-button-primary inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold transition hover:bg-slate-100">
               <Save size={16} />
               Salvar
             </button>
@@ -69,12 +69,12 @@ export default function Settings() {
         </div>
         <label className="block space-y-2">
           <span className="text-sm font-medium text-slate-300">URL backend</span>
-          <input readOnly value={import.meta.env.VITE_API_URL || config?.backendUrl || ""} className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.045] px-3 text-sm text-slate-300 outline-none" />
+          <input readOnly value={import.meta.env.VITE_API_URL || config?.backendUrl || ""} className="ios-control h-11 w-full px-3 text-sm text-slate-300 outline-none" />
         </label>
       </section>
       <section className="grid gap-4 md:grid-cols-4">
         {Object.entries(labels).map(([key, label]) => (
-          <div key={key} className="rounded-lg border border-white/10 bg-white/[0.055] p-4 shadow-glass backdrop-blur-xl">
+          <div key={key} className="ios-surface p-4">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-semibold text-white">{label}</div>
@@ -82,7 +82,7 @@ export default function Settings() {
               </div>
               {ok === key && <Check size={18} className="text-emerald-300" />}
             </div>
-            <button type="button" onClick={() => test(key)} className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/10 px-3 text-sm font-medium text-slate-200 transition hover:bg-white/10">
+            <button type="button" onClick={() => test(key)} className="ios-button-secondary inline-flex h-9 items-center gap-2 px-3 text-sm font-medium transition hover:bg-white/10">
               <RefreshCw size={15} className={testing === key ? "animate-spin" : ""} />
               Testar
             </button>
@@ -90,7 +90,7 @@ export default function Settings() {
         ))}
       </section>
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+        <div className="ios-surface p-5">
           <h3 className="text-base font-semibold text-white">Redes habilitadas</h3>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {allNetworks.map((network) => (
@@ -98,22 +98,22 @@ export default function Settings() {
                 key={network}
                 type="button"
                 onClick={() => account?.isAdmin && toggle(network)}
-                className={`h-10 rounded-lg border px-3 text-sm font-medium capitalize transition ${enabled.includes(network) ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.045] text-slate-500"}`}
+                className={`h-10 rounded-full border px-3 text-sm font-medium capitalize transition ${enabled.includes(network) ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.045] text-slate-500"}`}
               >
                 {network}
               </button>
             ))}
           </div>
         </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-glass backdrop-blur-xl">
+        <div className="ios-surface p-5">
           <h3 className="text-base font-semibold text-white">Modo intermediário</h3>
-          <div className="mt-4 inline-grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] p-1">
+          <div className="ios-control mt-4 inline-grid grid-cols-2 overflow-hidden p-1">
             {["manual", "automatic"].map((item) => (
               <button
                 key={item}
                 type="button"
                 onClick={() => account?.isAdmin && setMode(item)}
-                className={`h-10 min-w-28 rounded-md px-3 text-sm font-semibold transition ${mode === item ? "bg-white text-base-950" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
+                className={`h-10 min-w-28 rounded-full px-3 text-sm font-semibold transition ${mode === item ? "bg-white text-base-950" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
               >
                 {item === "manual" ? "Manual" : "Automático"}
               </button>

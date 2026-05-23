@@ -60,7 +60,7 @@ export default function Timeline({ items = [] }) {
   const progress = rows.length ? Math.round(((done + current * 0.5) / rows.length) * 100) : 0;
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+      <div className="ios-surface p-4">
         <div className="flex items-end justify-between gap-4">
           <div>
             <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Progresso</div>
@@ -68,8 +68,8 @@ export default function Timeline({ items = [] }) {
           </div>
           <div className="text-right text-sm text-slate-400">{done} de {rows.length} etapas</div>
         </div>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
-          <div className="h-full rounded-full bg-gradient-to-r from-blue-300 via-sky-300 to-emerald-300 transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="h-full rounded-full bg-[linear-gradient(90deg,#9fd7ff,#7cf7d4,#f8f8ff)] transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
@@ -78,9 +78,9 @@ export default function Timeline({ items = [] }) {
           const Icon = stage.icon;
           const style = stateStyle[item.state] || stateStyle.pending;
           return (
-            <article key={item.key || item.label} className={`rounded-lg border p-4 transition ${style.card}`}>
+            <article key={item.key || item.label} className={`rounded-[22px] border p-4 transition ${style.card}`}>
               <div className="flex items-start gap-3">
-                <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-lg border ${style.icon}`}>
+                <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-[16px] border ${style.icon}`}>
                   <Icon size={21} />
                 </div>
                 <div className="min-w-0 flex-1">

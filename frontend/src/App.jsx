@@ -27,14 +27,14 @@ function Guard({ children }) {
   if (!account) {
     return (
       <div className="grid min-h-screen place-items-center bg-transparent px-4">
-        <div className="w-full max-w-md rounded-lg border border-white/10 bg-white/[0.055] p-5 text-center shadow-glass backdrop-blur-xl">
+        <div className="ios-surface w-full max-w-md p-5 text-center">
           <div className="text-base font-semibold text-white">Conexao indisponivel</div>
           <div className="mt-2 text-sm text-slate-500">{error || "Verifique a URL da API."}</div>
           <div className="mt-5 flex justify-center gap-2">
-            <button type="button" onClick={sync} className="h-10 rounded-lg bg-white px-4 text-sm font-semibold text-base-950 transition hover:bg-slate-100">
+            <button type="button" onClick={sync} className="ios-button-primary h-10 px-4 text-sm font-semibold transition hover:bg-slate-100">
               Tentar novamente
             </button>
-            <button type="button" onClick={signOut} className="h-10 rounded-lg border border-white/10 px-4 text-sm font-medium text-slate-200 transition hover:bg-white/10">
+            <button type="button" onClick={signOut} className="ios-button-secondary h-10 px-4 text-sm font-medium transition hover:bg-white/10">
               Sair
             </button>
           </div>

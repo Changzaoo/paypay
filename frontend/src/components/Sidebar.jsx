@@ -13,10 +13,10 @@ function Content({ onNavigate }) {
   const signOut = useAuthStore((state) => state.signOut);
   return (
     <>
-      <div className="flex h-16 items-center border-b border-white/10 px-5">
+      <div className="flex h-20 items-center border-b border-white/10 px-5">
         <div className="text-lg font-semibold text-white">Operacoes</div>
       </div>
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-2 px-3 py-4">
         {links.map((item) => {
           const Icon = item.icon;
           return (
@@ -24,7 +24,7 @@ function Content({ onNavigate }) {
               key={item.to}
               to={item.to}
               onClick={onNavigate}
-              className={({ isActive }) => `flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition ${isActive ? "bg-white text-base-950" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
+              className={({ isActive }) => `flex h-12 items-center gap-3 rounded-[18px] px-3 text-sm font-medium transition ${isActive ? "bg-white text-base-950 shadow-[0_12px_36px_rgba(255,255,255,0.12)]" : "text-slate-300 hover:bg-white/10 hover:text-white"}`}
             >
               <Icon size={18} />
               {item.label}
@@ -39,7 +39,7 @@ function Content({ onNavigate }) {
             onNavigate?.();
             signOut();
           }}
-          className="flex h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
+          className="flex h-12 w-full items-center gap-3 rounded-[18px] px-3 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
         >
           <LogOut size={18} />
           Sair
@@ -59,11 +59,11 @@ export default function Sidebar({ mode = "desktop", open = false, onClose }) {
           onClick={onClose}
           className={`absolute inset-0 bg-black/55 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
         />
-        <aside className={`absolute inset-y-0 left-0 flex w-[min(84vw,320px)] flex-col border-r border-white/10 bg-base-950/85 shadow-glass backdrop-blur-2xl transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <aside className={`ios-surface-strong absolute bottom-3 left-3 top-3 flex w-[min(84vw,320px)] flex-col overflow-hidden transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-[calc(100%+1rem)]"}`}>
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-lg text-slate-400 transition hover:bg-white/5 hover:text-white"
+            className="ios-button-secondary absolute right-3 top-5 grid h-10 w-10 place-items-center text-slate-400 transition hover:bg-white/10 hover:text-white"
             aria-label="Fechar menu"
           >
             <X size={19} />
@@ -74,8 +74,10 @@ export default function Sidebar({ mode = "desktop", open = false, onClose }) {
     );
   }
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/10 bg-base-950/72 shadow-glass backdrop-blur-2xl lg:flex lg:flex-col">
-      <Content />
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 p-4 lg:flex lg:flex-col">
+      <div className="ios-surface flex min-h-0 flex-1 flex-col overflow-hidden">
+        <Content />
+      </div>
     </aside>
   );
 }

@@ -275,14 +275,14 @@ export default function NewOrder() {
           </section>
           <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-300">Endereco final</span>
-            <div className="ios-control p-3">
+            <div className="ios-control px-3 py-2">
               <textarea
                 required
                 value={form.outputAddress}
                 onChange={(event) => change("outputAddress", event.target.value)}
                 placeholder="Cole o endereco de recebimento"
-                rows={3}
-                className="w-full resize-none bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
+                rows={2}
+                className="min-h-12 w-full resize-none bg-transparent py-1 text-sm text-white outline-none placeholder:text-slate-600"
               />
             </div>
           </label>

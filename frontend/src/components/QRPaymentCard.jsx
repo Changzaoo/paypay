@@ -1,8 +1,12 @@
+import { Share2 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
+import { useState } from "react";
 import CopyBox from "./CopyBox";
+import PixShareSheet from "./PixShareSheet";
 import { compactDate, money } from "../lib/format";
 
 export default function QRPaymentCard({ order }) {
+  const [shareOpen, setShareOpen] = useState(false);
   const qrCode = order?.qrCode || order?.input?.qrCode;
   const qrImageUrl = order?.qrImageUrl || order?.input?.qrImageUrl;
   const expiresAt = order?.expiresAt || order?.input?.expiresAt;
@@ -24,7 +28,12 @@ export default function QRPaymentCard({ order }) {
           </div>
         </div>
         <CopyBox value={qrCode} label="Copia e cola" />
+        <button type="button" onClick={() => setShareOpen(true)} disabled={!qrCode} className="ios-button-primary inline-flex h-11 w-full items-center justify-center gap-2 px-4 text-sm font-semibold transition disabled:opacity-60">
+          <Share2 size={16} />
+          Compartilhar PIX
+        </button>
       </div>
+      <PixShareSheet open={shareOpen} onClose={() => setShareOpen(false)} order={order} />
     </div>
   );
 }

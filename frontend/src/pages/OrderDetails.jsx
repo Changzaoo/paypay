@@ -1,8 +1,9 @@
-import { Check, Copy, ExternalLink, Pencil, QrCode, ReceiptText, Wallet } from "lucide-react";
+import { Check, Copy, ExternalLink, Pencil, QrCode, ReceiptText, Share2, Wallet } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ManualStepModal from "../components/ManualStepModal";
+import PixShareSheet from "../components/PixShareSheet";
 import RetryButton from "../components/RetryButton";
 import StatusBadge from "../components/StatusBadge";
 import Timeline from "../components/Timeline";
@@ -57,6 +58,7 @@ export default function OrderDetails() {
   const manual = useOrderStore((state) => state.manual);
   const [modal, setModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     fetch(id);
@@ -127,10 +129,16 @@ export default function OrderDetails() {
                 <div className="rounded-[18px] border border-white/10 bg-white/[0.03] p-3">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Copia e cola</div>
                   <div className="mt-2 truncate font-mono text-xs text-slate-300">{qrCode || "-"}</div>
-                  <button type="button" onClick={copyCode} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 text-sm font-medium text-white transition hover:bg-white/10">
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
-                    {copied ? "Copiado" : "Copiar codigo"}
-                  </button>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                    <button type="button" onClick={copyCode} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 text-sm font-medium text-white transition hover:bg-white/10">
+                      {copied ? <Check size={16} /> : <Copy size={16} />}
+                      {copied ? "Copiado" : "Copiar codigo"}
+                    </button>
+                    <button type="button" onClick={() => setShareOpen(true)} disabled={!qrCode} className="ios-button-primary inline-flex h-9 w-full items-center justify-center gap-2 px-4 text-sm font-semibold disabled:opacity-60">
+                      <Share2 size={16} />
+                      Compartilhar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -179,6 +187,7 @@ export default function OrderDetails() {
       </div>
 
       <ManualStepModal open={modal} onClose={() => setModal(false)} onSubmit={(payload) => manual(current.publicId, payload)} />
+      <PixShareSheet open={shareOpen} onClose={() => setShareOpen(false)} order={current} />
     </div>
   );
 }

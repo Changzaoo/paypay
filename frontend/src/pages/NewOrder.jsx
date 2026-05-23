@@ -1,4 +1,4 @@
-import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, LockKeyhole, Mail, Phone, RotateCcw, Search, User, Wallet } from "lucide-react";
+import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, LockKeyhole, Mail, Phone, RotateCcw, Search, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import QRPaymentCard from "../components/QRPaymentCard";
@@ -87,7 +87,6 @@ export default function NewOrder() {
   const [result, setResult] = useState(null);
   const [form, setForm] = useState({
     amountBrl: "",
-    customerName: "",
     customerEmail: "",
     customerDocument: "",
     customerPhone: "",
@@ -179,12 +178,9 @@ export default function NewOrder() {
           <Timeline items={timelineItems} flow={timelineFlow} variant="compact" />
         </div>
         <div className="grid min-h-0 flex-1 gap-5 overflow-y-auto p-5">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="max-w-md">
             <Field icon={Banknote} label="Valor">
               <Input value={form.amountBrl} onChange={(value) => change("amountBrl", value)} type="number" inputMode="decimal" required placeholder="0,00 BRL" />
-            </Field>
-            <Field icon={User} label="Cliente">
-              <Input value={form.customerName} onChange={(value) => change("customerName", value)} placeholder="Nome opcional" />
             </Field>
           </div>
           <section className="ios-list-cell p-4">

@@ -424,6 +424,18 @@ textarea {
   .timeline-current {
     animation: timeline-pulse 2.2s ease-in-out infinite;
   }
+
+  .ios-share-backdrop {
+    animation: ios-fade-in 180ms ease-out both;
+  }
+
+  .ios-share-sheet {
+    animation: ios-sheet-in 260ms cubic-bezier(0.2, 0.86, 0.22, 1) both;
+  }
+
+  .ios-share-done {
+    animation: ios-pop-in 220ms cubic-bezier(0.2, 0.86, 0.22, 1) both;
+  }
 }
 
 @keyframes timeline-shine {
@@ -441,5 +453,36 @@ textarea {
   }
   50% {
     box-shadow: 0 18px 56px rgba(37,99,235,0.24);
+  }
+}
+
+@keyframes ios-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ios-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ios-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

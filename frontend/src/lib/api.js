@@ -63,6 +63,16 @@ export const getChannelStatus = async () => {
   return data;
 };
 
+export const connectChannel = async () => {
+  const { data } = await api.post("/api/channel/connect");
+  return data;
+};
+
+export const disconnectChannel = async () => {
+  const { data } = await api.post("/api/channel/disconnect");
+  return data;
+};
+
 export const getChannelThreads = async (params) => {
   const { data } = await api.get("/api/channel/threads", { params });
   return Array.isArray(data.items) ? data.items : [];

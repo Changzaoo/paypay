@@ -100,6 +100,32 @@ const touchThread = async ({ phone, name, lastText, raw, unread = 0 }) => {
   });
 };
 
+const handleWebEvent = async (event) => {
+  if (event.event === "ack") {
+    await db.updateChannelMessageByProviderRef(event.id, { status: event.status });
+    return;
+  }
+  if (event.event !== "message" || !event.phone) return;
+  const thread = await touchThread({
+    phone: event.phone,
+    name: event.name,
+    lastText: event.body || event.type,
+    raw: event.raw,
+    unread: event.direction === "inbound" ? 1 : 0
+  });
+  await db.insertChannelMessage({
+    thread_id: thread.id,
+    provider: "web",
+    provider_ref: event.id,
+    direction: event.direction,
+    kind: event.type || "text",
+    body: event.body,
+    status: event.direction === "inbound" ? "received" : "sent",
+    payload: event.raw || {},
+    created_at: event.timestamp
+  });
+};
+
 router.use(requireAuth);
 
 router.get("/status", async (req, res, next) => {
@@ -114,6 +140,22 @@ router.get("/status", async (req, res, next) => {
     res.json({ ...provider.status(), storage });
   } catch (error) {
     next(error);
+  }
+});
+
+router.post("/connect", async (req, res, next) => {
+  try {
+    res.json(await provider.startWebSession(handleWebEvent));
+  } catch (error) {
+    next(providerError(error));
+  }
+});
+
+router.post("/disconnect", async (req, res, next) => {
+  try {
+    res.json(await provider.disconnectWebSession());
+  } catch (error) {
+    next(providerError(error));
   }
 });
 

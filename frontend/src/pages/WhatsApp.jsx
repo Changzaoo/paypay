@@ -1,8 +1,9 @@
-import { ArrowLeft, CheckCheck, ExternalLink, FileText, Image, MessageCircle, Paperclip, Phone, Plus, RefreshCw, Search, Send, User, Video, Volume2, Wifi, WifiOff } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, FileText, Image, Loader2, MessageCircle, Paperclip, Phone, Plus, QrCode, RefreshCw, Search, Send, User, Video, Volume2, Wifi, WifiOff, X } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useViewport } from "../hooks/useViewport";
 import { compactDate } from "../lib/format";
-import { createChannelThread, getChannelMessages, getChannelStatus, getChannelThreads, markChannelRead, sendChannelMessage } from "../lib/api";
+import { connectChannel, createChannelThread, getChannelMessages, getChannelStatus, getChannelThreads, markChannelRead, sendChannelMessage } from "../lib/api";
 
 const quickReplies = [
   "Ola, posso ajudar?",
@@ -49,17 +50,61 @@ function ThreadRow({ item, active, onClick }) {
   );
 }
 
-function ConnectButton({ status }) {
-  const connected = Boolean(status?.connected);
-  const open = () => {
-    window.open(status?.connectUrl || "https://web.whatsapp.com/", "_blank", "noopener,noreferrer");
-  };
+function ConnectButton({ status, busy, onConnect }) {
+  const connected = Boolean(status?.web?.connected);
+  const waiting = status?.web?.state === "qr" || status?.web?.state === "starting";
   return (
-    <button type="button" onClick={open} className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition ${connected ? "ios-button-secondary hover:bg-white/10" : "ios-button-primary"}`}>
-      <MessageCircle size={16} />
-      {connected ? "Abrir WhatsApp Web" : "Conectar WhatsApp Web"}
-      <ExternalLink size={14} />
+    <button type="button" onClick={onConnect} disabled={busy || connected} className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition disabled:opacity-70 ${connected ? "ios-button-secondary" : "ios-button-primary"}`}>
+      {busy || waiting ? <Loader2 size={16} className="animate-spin" /> : connected ? <Check size={16} /> : <MessageCircle size={16} />}
+      {connected ? "WhatsApp conectado" : waiting ? "Mostrar QR" : "Conectar WhatsApp"}
     </button>
+  );
+}
+
+function ConnectSheet({ open, status, onClose, onConnect, busy }) {
+  if (!open) return null;
+  const qr = status?.web?.qr;
+  const connected = Boolean(status?.web?.connected);
+  return (
+    <div className="ios-share-backdrop fixed inset-0 z-[80] flex items-end justify-center bg-black/55 px-3 py-4 backdrop-blur-xl sm:items-center">
+      <button type="button" aria-label="Fechar" onClick={onClose} className="absolute inset-0 cursor-default" />
+      <section className="ios-share-sheet ios-surface-strong relative w-full max-w-sm overflow-hidden p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-blue-100">
+              <QrCode size={18} />
+            </span>
+            <div>
+              <h3 className="text-base font-semibold text-white">Conectar WhatsApp</h3>
+              <div className="text-xs text-slate-500">{connected ? "Sessao ativa" : "Aparelhos conectados"}</div>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} className="ios-button-secondary grid h-9 w-9 place-items-center text-slate-300 transition hover:bg-white/10">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="mt-5 grid place-items-center rounded-[26px] border border-white/10 bg-white p-4">
+          {connected ? (
+            <div className="grid h-56 w-56 place-items-center rounded-[22px] bg-black text-emerald-100">
+              <Check size={52} />
+            </div>
+          ) : qr ? (
+            <QRCodeCanvas value={qr} size={224} includeMargin />
+          ) : (
+            <div className="grid h-56 w-56 place-items-center rounded-[22px] bg-black text-slate-300">
+              <Loader2 size={34} className="animate-spin" />
+            </div>
+          )}
+        </div>
+        <div className="mt-4 rounded-[20px] border border-white/10 bg-white/[0.04] p-3 text-sm leading-6 text-slate-300">
+          Abra o WhatsApp no celular, toque em Aparelhos conectados e escaneie o QR.
+        </div>
+        <button type="button" onClick={onConnect} disabled={busy || connected} className="ios-button-primary mt-4 inline-flex h-11 w-full items-center justify-center gap-2 px-4 text-sm font-semibold disabled:opacity-60">
+          {busy ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+          Atualizar QR
+        </button>
+      </section>
+    </div>
   );
 }
 
@@ -101,6 +146,8 @@ export default function WhatsApp() {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [media, setMedia] = useState({ type: "image", url: "", caption: "" });
   const [mobileView, setMobileView] = useState("threads");
+  const [connectOpen, setConnectOpen] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
   const compact = !viewport.isDesktop;
   const selected = useMemo(() => threads.find((item) => item.id === selectedId), [threads, selectedId]);
@@ -125,8 +172,31 @@ export default function WhatsApp() {
   }, [refreshKey]);
 
   useEffect(() => {
+    const state = status?.web?.state;
+    if (!connectOpen && state !== "qr" && state !== "starting") return undefined;
     let live = true;
-    const timer = window.setTimeout(async () => {
+    const timer = window.setInterval(async () => {
+      try {
+        const data = await getChannelStatus();
+        if (!live) return;
+        setStatus(data);
+        if (data?.web?.connected) {
+          setConnectOpen(false);
+          reload();
+        }
+      } catch {
+        if (live) setError("Falha ao atualizar conexao");
+      }
+    }, 2500);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, [connectOpen, status?.web?.state]);
+
+  useEffect(() => {
+    let live = true;
+    const loadThreads = async () => {
       try {
         const items = await getChannelThreads({ search });
         if (!live) return;
@@ -135,10 +205,13 @@ export default function WhatsApp() {
       } catch (nextError) {
         if (live) setError(nextError.response?.data?.error || "Falha ao carregar conversas");
       }
-    }, 180);
+    };
+    const timer = window.setTimeout(loadThreads, 180);
+    const poll = window.setInterval(loadThreads, 5000);
     return () => {
       live = false;
       window.clearTimeout(timer);
+      window.clearInterval(poll);
     };
   }, [search, refreshKey, selectedId, compact]);
 
@@ -169,6 +242,20 @@ export default function WhatsApp() {
   }, [messages.length, selectedId]);
 
   const reload = () => setRefreshKey((value) => value + 1);
+
+  const connect = async () => {
+    setConnecting(true);
+    setConnectOpen(true);
+    setError("");
+    try {
+      const data = await connectChannel();
+      setStatus(data);
+    } catch (nextError) {
+      setError(nextError.response?.data?.error || "Falha ao conectar WhatsApp");
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   const createThread = async (event) => {
     event.preventDefault();
@@ -250,7 +337,7 @@ export default function WhatsApp() {
             <StateDot active={status?.connected} />
           </div>
           <div className="mt-4">
-            <ConnectButton status={status} />
+            <ConnectButton status={status} busy={connecting} onConnect={connect} />
           </div>
           <div className="ios-control mt-4 flex h-11 items-center gap-2 px-3">
             <Search size={16} className="text-slate-500" />
@@ -385,6 +472,7 @@ export default function WhatsApp() {
           </div>
         </div>
       </aside>
+      <ConnectSheet open={connectOpen} status={status} busy={connecting} onClose={() => setConnectOpen(false)} onConnect={connect} />
     </div>
   );
 }

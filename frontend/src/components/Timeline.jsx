@@ -178,34 +178,6 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
           </div>
         </div>
         <FlowStepper status={rows.find((item) => item.state === "current")?.key || (progress >= 100 ? "COMPLETED" : "CREATED")} />
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 2xl:grid-cols-8">
-          {rows.map((item) => {
-            const info = stageInfo(item.key, flow);
-            const Icon = info.icon;
-            const status = statusMeta[item.state] || statusMeta.pending;
-            const tone = item.state === "done"
-              ? "border-emerald-300/20 bg-emerald-400/[0.06]"
-              : item.state === "current"
-                ? "border-blue-300/30 bg-blue-400/[0.08] timeline-current"
-                : item.state === "error"
-                  ? "border-red-300/30 bg-red-400/[0.08]"
-                  : "border-white/10 bg-white/[0.035]";
-            return (
-              <div key={item.key || item.label} className={`min-w-0 rounded-[18px] border p-2.5 ${tone}`}>
-                <div className="flex min-w-0 items-center gap-2">
-                  <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border ${status.node}`}>
-                    <Icon size={16} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-[11px] font-semibold uppercase text-blue-200">{info.eyebrow}</div>
-                    <div className="truncate text-xs font-semibold text-white">{info.title}</div>
-                  </div>
-                </div>
-                <div className="mt-2 break-words text-[11px] font-medium leading-4 text-slate-400">{info.route}</div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     );
   }

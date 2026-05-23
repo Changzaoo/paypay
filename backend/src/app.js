@@ -13,12 +13,20 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+const allowedOrigins = () => {
+  return String(process.env.FRONTEND_PUBLIC_URL || "")
+    .split(",")
+    .map((value) => value.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+};
+
 app.use(helmet());
 app.use(cors({
   origin(origin, callback) {
-    const allowed = process.env.FRONTEND_PUBLIC_URL;
-    if (!origin || origin === allowed) return callback(null, true);
-    return callback(new Error("Origem não permitida"));
+    if (!origin) return callback(null, true);
+    const normalized = origin.replace(/\/$/, "");
+    if (allowedOrigins().includes(normalized)) return callback(null, true);
+    return callback(new Error("Origem nao permitida"));
   },
   credentials: true
 }));

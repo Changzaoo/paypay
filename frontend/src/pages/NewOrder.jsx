@@ -1,7 +1,6 @@
 import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, LockKeyhole, Mail, Phone, RotateCcw, Search, User, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import BrandMark from "../components/BrandMark";
 import QRPaymentCard from "../components/QRPaymentCard";
 import StatusBadge from "../components/StatusBadge";
 import Timeline from "../components/Timeline";
@@ -129,12 +128,8 @@ export default function NewOrder() {
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
       <form onSubmit={submit} className="ios-surface overflow-hidden">
-        <div className="flex items-center justify-between gap-4 border-b border-white/10 p-5">
-          <div>
-            <div className="text-sm font-medium text-slate-500">Entrada</div>
-            <h2 className="mt-1 text-3xl font-semibold tracking-tight text-white">Nova operacao</h2>
-          </div>
-          <BrandMark compact />
+        <div className="w-full border-b border-white/10 p-4 sm:p-5">
+          <Timeline items={timelineItems} flow={timelineFlow} variant="compact" />
         </div>
         <div className="grid gap-5 p-5">
           <div className="grid gap-4 md:grid-cols-2">
@@ -260,7 +255,6 @@ export default function NewOrder() {
               <StatusBadge value={result.status} />
             </div>
             <QRPaymentCard order={result} />
-            <Timeline items={timelineItems} flow={timelineFlow} />
             <Link to={`/orders/${result.publicId}`} className="ios-button-secondary inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:bg-white/10">
               Abrir detalhe
               <ArrowRight size={16} />
@@ -269,7 +263,6 @@ export default function NewOrder() {
         ) : (
           <>
             <div className="ios-surface p-5 text-sm text-slate-500">A cobranca sera exibida aqui.</div>
-            <Timeline items={timelineItems} flow={timelineFlow} />
           </>
         )}
       </aside>

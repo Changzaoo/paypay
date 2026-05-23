@@ -157,12 +157,59 @@ const stageInfo = (key, flow) => {
   };
 };
 
-export default function Timeline({ items = [], flow = {} }) {
+export default function Timeline({ items = [], flow = {}, variant = "full" }) {
   const rows = Array.isArray(items) ? items : [];
   const done = rows.filter((item) => item.state === "done").length;
   const current = rows.some((item) => item.state === "current") ? 1 : 0;
   const progress = rows.length ? Math.round(((done + current * 0.5) / rows.length) * 100) : 0;
   const context = flowContext(flow);
+  if (variant === "compact") {
+    return (
+      <div className="w-full">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Fluxo real</div>
+            <div className="mt-1 break-words text-lg font-semibold text-white">{`PIX BRL -> DePix -> USDT Liquid -> ${context.finalRoute}`}</div>
+          </div>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-sm font-semibold text-white">{progress}%</div>
+            <div className="text-sm text-slate-500">{done}/{rows.length}</div>
+          </div>
+        </div>
+        <div className="timeline-track mt-4 h-2.5 rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="timeline-fill h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 2xl:grid-cols-8">
+          {rows.map((item) => {
+            const info = stageInfo(item.key, flow);
+            const Icon = info.icon;
+            const status = statusMeta[item.state] || statusMeta.pending;
+            const tone = item.state === "done"
+              ? "border-emerald-300/20 bg-emerald-400/[0.06]"
+              : item.state === "current"
+                ? "border-blue-300/30 bg-blue-400/[0.08] timeline-current"
+                : item.state === "error"
+                  ? "border-red-300/30 bg-red-400/[0.08]"
+                  : "border-white/10 bg-white/[0.035]";
+            return (
+              <div key={item.key || item.label} className={`min-w-0 rounded-[18px] border p-2.5 ${tone}`}>
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border ${status.node}`}>
+                    <Icon size={16} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate text-[11px] font-semibold uppercase text-blue-200">{info.eyebrow}</div>
+                    <div className="truncate text-xs font-semibold text-white">{info.title}</div>
+                  </div>
+                </div>
+                <div className="mt-2 break-words text-[11px] font-medium leading-4 text-slate-400">{info.route}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="ios-surface overflow-hidden p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

@@ -33,7 +33,7 @@ const mask = (value) => {
 export const status = () => ({
   connected: Boolean(token() && phoneNumberId()),
   phoneNumberId: mask(phoneNumberId()),
-  connectUrl: process.env.WHATSAPP_CONNECT_URL || "https://business.facebook.com/wa/manage/phone-numbers/",
+  connectUrl: process.env.WHATSAPP_CONNECT_URL || "https://web.whatsapp.com/",
   graphVersion: graphVersion()
 });
 

@@ -52,12 +52,12 @@ function ThreadRow({ item, active, onClick }) {
 function ConnectButton({ status }) {
   const connected = Boolean(status?.connected);
   const open = () => {
-    window.open(status?.connectUrl || "https://business.facebook.com/wa/manage/phone-numbers/", "_blank", "noopener,noreferrer");
+    window.open(status?.connectUrl || "https://web.whatsapp.com/", "_blank", "noopener,noreferrer");
   };
   return (
     <button type="button" onClick={open} className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition ${connected ? "ios-button-secondary hover:bg-white/10" : "ios-button-primary"}`}>
       <MessageCircle size={16} />
-      {connected ? "Gerenciar WhatsApp" : "Conectar WhatsApp"}
+      {connected ? "Abrir WhatsApp Web" : "Conectar WhatsApp Web"}
       <ExternalLink size={14} />
     </button>
   );

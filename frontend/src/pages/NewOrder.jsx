@@ -126,12 +126,12 @@ export default function NewOrder() {
     setResult(data);
   };
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
-      <form onSubmit={submit} className="ios-surface overflow-hidden">
+    <div className="grid gap-6 lg:h-[calc(100vh-2rem)] xl:grid-cols-[minmax(0,1fr)_440px]">
+      <form onSubmit={submit} className="ios-surface flex min-h-0 flex-col overflow-hidden lg:h-full">
         <div className="w-full border-b border-white/10 p-4 sm:p-5">
           <Timeline items={timelineItems} flow={timelineFlow} variant="compact" />
         </div>
-        <div className="grid gap-5 p-5">
+        <div className="grid min-h-0 flex-1 gap-5 overflow-y-auto p-5">
           <div className="grid gap-4 md:grid-cols-2">
             <Field icon={Banknote} label="Valor">
               <Input value={form.amountBrl} onChange={(value) => change("amountBrl", value)} type="number" inputMode="decimal" required placeholder="0,00 BRL" />
@@ -247,7 +247,7 @@ export default function NewOrder() {
           </button>
         </div>
       </form>
-      <aside className="space-y-4">
+      <aside className="min-h-0 space-y-4 lg:h-full lg:overflow-y-auto">
         {result ? (
           <>
             <div className="ios-surface flex items-center justify-between gap-3 p-4">

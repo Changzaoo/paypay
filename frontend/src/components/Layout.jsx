@@ -17,6 +17,9 @@ export default function Layout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const hideTopbar = location.pathname === "/new";
+  const mainClass = hideTopbar
+    ? "px-3 py-4 pb-28 sm:px-4 lg:px-8 lg:py-4 lg:pb-4"
+    : "px-3 py-4 pb-28 sm:px-4 sm:py-5 lg:px-8 lg:py-7";
   useEffect(() => {
     if (viewport.isDesktop) setMenuOpen(false);
   }, [viewport.isDesktop]);
@@ -26,7 +29,7 @@ export default function Layout() {
       <Sidebar mode="mobile" open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="min-h-screen lg:pl-72">
         {!hideTopbar && <Topbar onMenu={() => setMenuOpen(true)} />}
-        <main className="px-3 py-4 pb-28 sm:px-4 sm:py-5 lg:px-8 lg:py-7">
+        <main className={mainClass}>
           <Outlet />
         </main>
       </div>

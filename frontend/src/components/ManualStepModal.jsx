@@ -24,8 +24,8 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
     }
   };
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 px-4">
-      <form onSubmit={submit} className="w-full max-w-lg rounded-lg border border-white/10 bg-base-900 p-5 shadow-panel">
+    <div className="fixed inset-0 z-50 grid items-end bg-black/70 px-3 py-3 sm:place-items-center sm:px-4">
+      <form onSubmit={submit} className="max-h-[calc(100vh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-lg border border-white/10 bg-base-900 p-5 shadow-panel">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <div className="text-lg font-semibold text-white">Atualizar etapa</div>

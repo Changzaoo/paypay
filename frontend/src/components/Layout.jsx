@@ -1,26 +1,34 @@
 import { BarChart3, Plus, Settings, Table2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useViewport } from "../hooks/useViewport";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
 const mobile = [
   { to: "/", label: "Painel", icon: BarChart3 },
   { to: "/new", label: "Nova", icon: Plus },
-  { to: "/orders", label: "Histórico", icon: Table2 },
+  { to: "/orders", label: "Historico", icon: Table2 },
   { to: "/settings", label: "Ajustes", icon: Settings }
 ];
 
 export default function Layout() {
+  const viewport = useViewport();
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (viewport.isDesktop) setMenuOpen(false);
+  }, [viewport.isDesktop]);
   return (
-    <div className="min-h-screen bg-base-950">
-      <Sidebar />
+    <div className="min-h-screen bg-base-950" data-screen={viewport.kind}>
+      <Sidebar mode="desktop" />
+      <Sidebar mode="mobile" open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="min-h-screen lg:pl-64">
-        <Topbar />
-        <main className="px-4 py-6 pb-24 lg:px-8">
+        <Topbar onMenu={() => setMenuOpen(true)} />
+        <main className="px-3 py-4 pb-24 sm:px-4 sm:py-5 lg:px-8 lg:py-6">
           <Outlet />
         </main>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-base-950 lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-base-950/95 backdrop-blur lg:hidden">
         {mobile.map((item) => {
           const Icon = item.icon;
           return (

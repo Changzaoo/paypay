@@ -73,14 +73,24 @@ export const useOrderStore = create((set, get) => ({
     return current;
   },
   loadConfig: async () => {
-    const config = await getConfig();
-    set({ config });
-    return config;
+    try {
+      const config = await getConfig();
+      set({ config });
+      return config;
+    } catch (error) {
+      set({ error: error.response?.data?.error || "Falha ao carregar" });
+      return null;
+    }
   },
   loadSettings: async () => {
-    const settings = await getSettings();
-    set({ settings });
-    return settings;
+    try {
+      const settings = await getSettings();
+      set({ settings });
+      return settings;
+    } catch (error) {
+      set({ error: error.response?.data?.error || "Falha ao carregar" });
+      return null;
+    }
   },
   saveSettings: async (payload) => {
     const settings = await saveSettings(payload);

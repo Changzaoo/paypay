@@ -1,9 +1,68 @@
 import { Router } from "express";
 import { requireAdmin, requireAuth } from "../middlewares/auth.js";
 import { getAdminClient, getSetting, upsertSetting } from "../services/db.service.js";
-import { assets, networks } from "../utils/address.js";
+import * as providerC from "../services/providerC.service.js";
+import { assets, fallbackSettlementOptions, networkLabels, networks } from "../utils/address.js";
 
 const router = Router();
+const sourceMethod = { coin: "USDT", network: "liquid", label: "USDT Liquid" };
+const optionCache = { expiresAt: 0, items: null };
+
+const titleCase = (value) => String(value || "").replace(/[-_]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
+const isOffline = (value, network) => {
+  if (value === true) return true;
+  if (!Array.isArray(value)) return false;
+  return value.map((item) => String(item).toLowerCase()).includes(network);
+};
+
+const optionPriority = (coin) => {
+  const index = ["BTC", "ETH", "USDT", "USDC", "SOL", "XMR"].indexOf(coin);
+  return index === -1 ? 99 : index;
+};
+
+const normalizeOptions = (coins) => {
+  const rows = Array.isArray(coins) ? coins : [];
+  return rows
+    .map((item) => {
+      const coin = String(item.coin || "").trim().toUpperCase();
+      const memo = new Set((Array.isArray(item.networksWithMemo) ? item.networksWithMemo : []).map((value) => String(value).toLowerCase()));
+      const routes = (Array.isArray(item.networks) ? item.networks : [])
+        .map((network) => String(network || "").trim().toLowerCase())
+        .filter(Boolean)
+        .filter((network) => !(coin === sourceMethod.coin && network === sourceMethod.network))
+        .filter((network) => !isOffline(item.settleOffline, network))
+        .map((network) => ({
+          id: network,
+          label: networkLabels[network] || titleCase(network),
+          hasMemo: memo.has(network)
+        }));
+      if (!coin || !routes.length) return null;
+      return {
+        coin,
+        name: item.name || coin,
+        networks: routes
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => optionPriority(a.coin) - optionPriority(b.coin) || a.coin.localeCompare(b.coin));
+};
+
+const loadSettlementOptions = async (ip) => {
+  if (optionCache.items && optionCache.expiresAt > Date.now()) return optionCache.items;
+  try {
+    const options = normalizeOptions(await providerC.getCoins(ip));
+    if (options.length) {
+      optionCache.items = options;
+      optionCache.expiresAt = Date.now() + 5 * 60 * 1000;
+      return options;
+    }
+  } catch {
+    optionCache.items = null;
+    optionCache.expiresAt = 0;
+  }
+  return fallbackSettlementOptions;
+};
 
 router.get("/health", async (req, res) => {
   res.json({
@@ -55,6 +114,13 @@ router.get("/config/public", requireAuth, async (req, res) => {
       route: true,
       settlement: Boolean(process.env.SIDESHIFT_SECRET)
     }
+  });
+});
+
+router.get("/config/settlement-options", requireAuth, async (req, res) => {
+  res.json({
+    source: sourceMethod,
+    items: await loadSettlementOptions(req.ip)
   });
 });
 

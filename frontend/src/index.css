@@ -135,4 +135,66 @@ textarea {
     background-clip: text;
     color: transparent;
   }
+
+  .timeline-track {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timeline-track::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
+    transform: translateX(-100%);
+    animation: timeline-sweep 2.6s ease-in-out infinite;
+  }
+
+  .timeline-fill {
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 0 22px rgba(37,99,235,0.38),
+      inset 0 1px 0 rgba(255,255,255,0.28);
+  }
+
+  .timeline-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
+    transform: translateX(-110%);
+    animation: timeline-shine 1.8s ease-in-out infinite;
+  }
+
+  .timeline-current {
+    animation: timeline-pulse 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes timeline-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  52%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes timeline-shine {
+  0% {
+    transform: translateX(-110%);
+  }
+  56%, 100% {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes timeline-pulse {
+  0%, 100% {
+    box-shadow: 0 18px 50px rgba(37,99,235,0.12);
+  }
+  50% {
+    box-shadow: 0 18px 56px rgba(37,99,235,0.24);
+  }
 }

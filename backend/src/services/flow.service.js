@@ -144,6 +144,7 @@ export const createFlow = async (account, payload, ip) => {
     settlement_output_network: payload.outputNetwork,
     settlement_output_address: payload.outputAddress,
     refund_address: payload.refundAddress || null,
+    raw_settlement: payload.outputMemo ? { outputMemo: payload.outputMemo } : null,
     status: "CREATED"
   });
   try {
@@ -296,6 +297,7 @@ export const createFinalShift = async (order, ip) => {
     settleNetwork: order.settlement_output_network,
     depositAmount: String(amount),
     settleAddress: order.settlement_output_address,
+    settleMemo: order.raw_settlement?.outputMemo || undefined,
     refundAddress: order.refund_address || undefined
   };
   const sourceIp = order.operator_ip || ip;
@@ -315,7 +317,7 @@ export const createFinalShift = async (order, ip) => {
     settlement_deposit_address: data.depositAddress,
     settlement_deposit_amount: data.depositAmount,
     settlement_settle_amount: data.settleAmount,
-    raw_settlement: { quote, shift },
+    raw_settlement: { ...(order.raw_settlement?.outputMemo ? { outputMemo: order.raw_settlement.outputMemo } : {}), quote, shift },
     error_message: null
   });
   await db.insertEvent({

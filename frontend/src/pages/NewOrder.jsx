@@ -1,31 +1,30 @@
-import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, Mail, Phone, RotateCcw, User, Wallet } from "lucide-react";
+import { ArrowRight, Badge, Banknote, ChevronDown, Loader2, LockKeyhole, Mail, Phone, RotateCcw, Search, User, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import BrandMark from "../components/BrandMark";
 import QRPaymentCard from "../components/QRPaymentCard";
 import StatusBadge from "../components/StatusBadge";
+import Timeline from "../components/Timeline";
 import { useOrderStore } from "../store/orderStore";
 
-const routeMap = {
-  ETH: ["ethereum", "arbitrum", "base"],
-  BTC: ["bitcoin"],
-  USDT: ["ethereum", "arbitrum", "base", "polygon", "bsc"]
-};
+const sourceDefault = { coin: "USDT", network: "liquid", label: "USDT Liquid" };
 
-const assetText = {
-  ETH: "ETH",
-  BTC: "BTC",
-  USDT: "USDT"
-};
+const fallbackOptions = [
+  { coin: "ETH", name: "Ethereum", networks: [{ id: "ethereum", label: "Ethereum" }, { id: "arbitrum", label: "Arbitrum" }, { id: "base", label: "Base" }] },
+  { coin: "BTC", name: "Bitcoin", networks: [{ id: "bitcoin", label: "Bitcoin" }] },
+  { coin: "USDT", name: "Tether", networks: [{ id: "ethereum", label: "Ethereum" }, { id: "arbitrum", label: "Arbitrum" }, { id: "base", label: "Base" }, { id: "polygon", label: "Polygon" }, { id: "bsc", label: "BSC" }] }
+];
 
-const networkText = {
-  bitcoin: "Bitcoin",
-  ethereum: "Ethereum",
-  arbitrum: "Arbitrum",
-  base: "Base",
-  polygon: "Polygon",
-  bsc: "BSC"
-};
+const previewTimeline = [
+  { key: "CREATED", label: "Criado" },
+  { key: "WAITING_PAYMENT", label: "Aguardando pagamento" },
+  { key: "PAYMENT_CONFIRMED", label: "Pagamento confirmado" },
+  { key: "WAITING_INTERMEDIATE_SETTLEMENT", label: "Liquidacao" },
+  { key: "INTERMEDIATE_CONVERSION_STARTED", label: "Conversao intermediaria" },
+  { key: "FINAL_SHIFT_CREATED", label: "Conversao final" },
+  { key: "WAITING_FINAL_DEPOSIT", label: "Envio" },
+  { key: "COMPLETED", label: "Concluido" }
+];
 
 function Field({ icon: Icon, label, children }) {
   return (
@@ -53,12 +52,20 @@ function Input({ value, onChange, type = "text", required = false, placeholder =
   );
 }
 
+const stagePreview = (hasOrder) => previewTimeline.map((item, index) => ({
+  ...item,
+  state: hasOrder ? (index === 0 ? "done" : index === 1 ? "current" : "pending") : (index === 0 ? "current" : "pending")
+}));
+
 export default function NewOrder() {
   const create = useOrderStore((state) => state.create);
   const fetchStatus = useOrderStore((state) => state.fetchStatus);
+  const loadSettlementOptions = useOrderStore((state) => state.loadSettlementOptions);
+  const settlementOptions = useOrderStore((state) => state.settlementOptions);
   const loading = useOrderStore((state) => state.loading);
   const error = useOrderStore((state) => state.error);
   const [advanced, setAdvanced] = useState(false);
+  const [query, setQuery] = useState("");
   const [result, setResult] = useState(null);
   const [form, setForm] = useState({
     amountBrl: "",
@@ -69,13 +76,37 @@ export default function NewOrder() {
     outputAsset: "ETH",
     outputNetwork: "ethereum",
     outputAddress: "",
+    outputMemo: "",
     refundAddress: ""
   });
-  const allowed = useMemo(() => routeMap[form.outputAsset] || [], [form.outputAsset]);
+  const options = useMemo(() => {
+    const items = settlementOptions?.items;
+    return Array.isArray(items) && items.length ? items : fallbackOptions;
+  }, [settlementOptions]);
+  const source = settlementOptions?.source || sourceDefault;
+  const selectedAsset = options.find((item) => item.coin === form.outputAsset) || options[0];
+  const selectedNetwork = selectedAsset?.networks?.find((item) => item.id === form.outputNetwork) || selectedAsset?.networks?.[0];
+  const filteredOptions = useMemo(() => {
+    const text = query.trim().toLowerCase();
+    if (!text) return options;
+    return options.filter((item) => `${item.coin} ${item.name}`.toLowerCase().includes(text));
+  }, [options, query]);
+  const timelineItems = result?.timeline?.length ? result.timeline : stagePreview(Boolean(result));
   const change = (key, value) => setForm((current) => ({ ...current, [key]: value }));
-  const changeAsset = (value) => {
-    setForm((current) => ({ ...current, outputAsset: value, outputNetwork: routeMap[value][0] }));
+  const changeAsset = (item) => {
+    const network = item.networks?.[0]?.id || "";
+    setForm((current) => ({ ...current, outputAsset: item.coin, outputNetwork: network || current.outputNetwork }));
+    setQuery("");
   };
+  useEffect(() => {
+    loadSettlementOptions();
+  }, [loadSettlementOptions]);
+  useEffect(() => {
+    if (!selectedAsset || !selectedNetwork) return;
+    if (selectedAsset.coin !== form.outputAsset || selectedNetwork.id !== form.outputNetwork) {
+      setForm((current) => ({ ...current, outputAsset: selectedAsset.coin, outputNetwork: selectedNetwork.id }));
+    }
+  }, [selectedAsset, selectedNetwork, form.outputAsset, form.outputNetwork]);
   useEffect(() => {
     if (!result?.publicId) return undefined;
     const timer = window.setInterval(async () => {
@@ -109,36 +140,61 @@ export default function NewOrder() {
             </Field>
           </div>
           <section className="ios-list-cell p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div className="text-sm font-semibold text-white">Destino</div>
-                <div className="text-xs text-slate-500">{assetText[form.outputAsset]} em {networkText[form.outputNetwork]}</div>
+                <div className="text-xs text-slate-500">{selectedAsset?.coin || form.outputAsset} em {selectedNetwork?.label || form.outputNetwork}</div>
               </div>
-              <Wallet size={19} className="text-slate-500" />
+              <div className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 text-xs font-semibold text-slate-200">
+                <LockKeyhole size={14} className="text-blue-200" />
+                {source.label || `${source.coin} ${source.network}`}
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {Object.keys(routeMap).map((asset) => (
-                <button
-                  key={asset}
-                  type="button"
-                  onClick={() => changeAsset(asset)}
-                  className={`h-12 rounded-full border text-sm font-semibold transition ${form.outputAsset === asset ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(37,99,235,0.2)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
-                >
-                  {assetText[asset]}
-                </button>
-              ))}
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {allowed.map((network) => (
-                <button
-                  key={network}
-                  type="button"
-                  onClick={() => change("outputNetwork", network)}
-                  className={`h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
-                >
-                  {networkText[network]}
-                </button>
-              ))}
+            <div className="grid gap-3">
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-300">Moeda de saida</span>
+                <div className="ios-control flex h-11 items-center gap-2 px-3">
+                  <Search size={16} className="shrink-0 text-slate-500" />
+                  <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Buscar moeda"
+                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
+                  />
+                </div>
+              </label>
+              <div className="grid max-h-52 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
+                {filteredOptions.map((item) => (
+                  <button
+                    key={item.coin}
+                    type="button"
+                    onClick={() => changeAsset(item)}
+                    className={`min-h-14 rounded-[18px] border px-3 py-2 text-left transition ${form.outputAsset === item.coin ? "border-white/20 brand-gradient text-white shadow-[0_12px_36px_rgba(37,99,235,0.2)]" : "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white"}`}
+                  >
+                    <div className="text-sm font-semibold">{item.coin}</div>
+                    <div className="truncate text-xs opacity-70">{item.name}</div>
+                  </button>
+                ))}
+              </div>
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="text-sm font-medium text-slate-300">Rede de saida</div>
+                  <Wallet size={17} className="text-slate-500" />
+                </div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {(selectedAsset?.networks || []).map((network) => (
+                    <button
+                      key={network.id}
+                      type="button"
+                      onClick={() => change("outputNetwork", network.id)}
+                      className={`min-h-11 rounded-full border px-3 text-sm font-medium transition ${form.outputNetwork === network.id ? "border-blue-200/35 bg-blue-300/10 text-blue-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:bg-white/10 hover:text-white"}`}
+                    >
+                      <span>{network.label}</span>
+                      {network.hasMemo && <span className="ml-2 rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase text-slate-300">memo</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
           <label className="block space-y-2">
@@ -154,6 +210,11 @@ export default function NewOrder() {
               />
             </div>
           </label>
+          {selectedNetwork?.hasMemo && (
+            <Field icon={Wallet} label="Memo">
+              <Input value={form.outputMemo} onChange={(value) => change("outputMemo", value)} required placeholder="Informe o memo da rede" />
+            </Field>
+          )}
           <button
             type="button"
             onClick={() => setAdvanced((value) => !value)}
@@ -193,13 +254,17 @@ export default function NewOrder() {
               <StatusBadge value={result.status} />
             </div>
             <QRPaymentCard order={result} />
+            <Timeline items={timelineItems} />
             <Link to={`/orders/${result.publicId}`} className="ios-button-secondary inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:bg-white/10">
               Abrir detalhe
               <ArrowRight size={16} />
             </Link>
           </>
         ) : (
-          <div className="ios-surface p-5 text-sm text-slate-500">A cobranca sera exibida aqui.</div>
+          <>
+            <div className="ios-surface p-5 text-sm text-slate-500">A cobranca sera exibida aqui.</div>
+            <Timeline items={timelineItems} />
+          </>
         )}
       </aside>
     </div>

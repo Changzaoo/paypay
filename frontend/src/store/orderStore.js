@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import { createOrder, getConfig, getOrder, getOrders, getOrderStatus, getSettings, manualOrder, ping, retryOrder, saveSettings } from "../lib/api";
+import { createOrder, getConfig, getOrder, getOrders, getOrderStatus, getSettings, getSettlementOptions, manualOrder, ping, retryOrder, saveSettings } from "../lib/api";
 
 export const useOrderStore = create((set, get) => ({
   items: [],
   current: null,
   config: null,
   settings: null,
+  settlementOptions: null,
   loading: false,
   error: "",
   filters: {
@@ -87,6 +88,16 @@ export const useOrderStore = create((set, get) => ({
       const settings = await getSettings();
       set({ settings });
       return settings;
+    } catch (error) {
+      set({ error: error.response?.data?.error || "Falha ao carregar" });
+      return null;
+    }
+  },
+  loadSettlementOptions: async () => {
+    try {
+      const data = await getSettlementOptions();
+      set({ settlementOptions: data });
+      return data;
     } catch (error) {
       set({ error: error.response?.data?.error || "Falha ao carregar" });
       return null;

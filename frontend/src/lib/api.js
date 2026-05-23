@@ -58,6 +58,11 @@ export const getSettings = async () => {
   return data;
 };
 
+export const getSettlementOptions = async () => {
+  const { data } = await api.get("/api/config/settlement-options");
+  return data;
+};
+
 export const saveSettings = async (payload) => {
   const { data } = await api.post("/api/config/settings", payload);
   return data;

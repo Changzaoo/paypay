@@ -6,8 +6,11 @@ const meta = {
   PAYMENT_CONFIRMED: { icon: BadgeCheck, caption: "Entrada confirmada" },
   WAITING_INTERMEDIATE_SETTLEMENT: { icon: Clock3, caption: "Aguardando liquidacao" },
   INTERMEDIATE_CONVERSION_STARTED: { icon: RefreshCw, caption: "Processamento em andamento" },
+  INTERMEDIATE_CONVERSION_DONE: { icon: RefreshCw, caption: "Processamento concluido" },
   FINAL_SHIFT_CREATED: { icon: Radio, caption: "Destino preparado" },
   WAITING_FINAL_DEPOSIT: { icon: Send, caption: "Envio em andamento" },
+  FINAL_PROCESSING: { icon: Send, caption: "Envio em processamento" },
+  WAITING_MANUAL_STEP: { icon: Clock3, caption: "Aguardando acao" },
   COMPLETED: { icon: ShieldCheck, caption: "Operacao finalizada" }
 };
 
@@ -68,8 +71,8 @@ export default function Timeline({ items = [] }) {
           </div>
           <div className="text-right text-sm text-slate-400">{done} de {rows.length} etapas</div>
         </div>
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-          <div className="h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="timeline-track mt-4 h-3 rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="timeline-fill h-full rounded-full brand-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
@@ -78,7 +81,7 @@ export default function Timeline({ items = [] }) {
           const Icon = stage.icon;
           const style = stateStyle[item.state] || stateStyle.pending;
           return (
-            <article key={item.key || item.label} className={`rounded-[22px] border p-4 transition ${style.card}`}>
+            <article key={item.key || item.label} className={`rounded-[22px] border p-4 transition ${style.card} ${item.state === "current" ? "timeline-current" : ""}`}>
               <div className="flex items-start gap-3">
                 <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-[16px] border ${style.icon}`}>
                   <Icon size={21} />

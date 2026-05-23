@@ -1,9 +1,7 @@
 import { BarChart3, Plus, Settings, Table2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useViewport } from "../hooks/useViewport";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
 
 const mobile = [
   { to: "/", label: "Painel", icon: BarChart3 },
@@ -14,22 +12,11 @@ const mobile = [
 
 export default function Layout() {
   const viewport = useViewport();
-  const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const hideTopbar = location.pathname === "/new";
-  const mainClass = hideTopbar
-    ? "px-3 py-4 pb-28 sm:px-4 lg:px-8 lg:py-4 lg:pb-4"
-    : "px-3 py-4 pb-28 sm:px-4 sm:py-5 lg:px-8 lg:py-7";
-  useEffect(() => {
-    if (viewport.isDesktop) setMenuOpen(false);
-  }, [viewport.isDesktop]);
   return (
     <div className="min-h-screen bg-transparent" data-screen={viewport.kind}>
       <Sidebar mode="desktop" />
-      <Sidebar mode="mobile" open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="min-h-screen lg:pl-72">
-        {!hideTopbar && <Topbar onMenu={() => setMenuOpen(true)} />}
-        <main className={mainClass}>
+        <main className="px-3 py-4 pb-28 sm:px-4 lg:px-8 lg:py-4 lg:pb-4">
           <Outlet />
         </main>
       </div>

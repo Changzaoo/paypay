@@ -1,5 +1,6 @@
-import { CheckCheck, FileText, Image, MessageCircle, Paperclip, Phone, Plus, RefreshCw, Search, Send, User, Video, Volume2, Wifi, WifiOff } from "lucide-react";
+import { ArrowLeft, CheckCheck, ExternalLink, FileText, Image, MessageCircle, Paperclip, Phone, Plus, RefreshCw, Search, Send, User, Video, Volume2, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useViewport } from "../hooks/useViewport";
 import { compactDate } from "../lib/format";
 import { createChannelThread, getChannelMessages, getChannelStatus, getChannelThreads, markChannelRead, sendChannelMessage } from "../lib/api";
 
@@ -48,6 +49,20 @@ function ThreadRow({ item, active, onClick }) {
   );
 }
 
+function ConnectButton({ status }) {
+  const connected = Boolean(status?.connected);
+  const open = () => {
+    window.open(status?.connectUrl || "https://business.facebook.com/wa/manage/phone-numbers/", "_blank", "noopener,noreferrer");
+  };
+  return (
+    <button type="button" onClick={open} className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition ${connected ? "ios-button-secondary hover:bg-white/10" : "ios-button-primary"}`}>
+      <MessageCircle size={16} />
+      {connected ? "Gerenciar WhatsApp" : "Conectar WhatsApp"}
+      <ExternalLink size={14} />
+    </button>
+  );
+}
+
 function MessageBubble({ item }) {
   const outbound = item.direction === "outbound";
   return (
@@ -70,6 +85,7 @@ function MessageBubble({ item }) {
 }
 
 export default function WhatsApp() {
+  const viewport = useViewport();
   const bottomRef = useRef(null);
   const [status, setStatus] = useState(null);
   const [threads, setThreads] = useState([]);
@@ -84,9 +100,13 @@ export default function WhatsApp() {
   const [newContact, setNewContact] = useState({ name: "", phone: "" });
   const [mediaOpen, setMediaOpen] = useState(false);
   const [media, setMedia] = useState({ type: "image", url: "", caption: "" });
+  const [mobileView, setMobileView] = useState("threads");
 
+  const compact = !viewport.isDesktop;
   const selected = useMemo(() => threads.find((item) => item.id === selectedId), [threads, selectedId]);
   const lastInbound = useMemo(() => [...messages].reverse().find((item) => item.direction === "inbound" && item.providerId), [messages]);
+  const showThreads = !compact || mobileView === "threads";
+  const showChat = !compact || mobileView === "chat";
 
   useEffect(() => {
     let live = true;
@@ -111,7 +131,7 @@ export default function WhatsApp() {
         const items = await getChannelThreads({ search });
         if (!live) return;
         setThreads(items);
-        if (!selectedId && items[0]) setSelectedId(items[0].id);
+        if (!compact && !selectedId && items[0]) setSelectedId(items[0].id);
       } catch (nextError) {
         if (live) setError(nextError.response?.data?.error || "Falha ao carregar conversas");
       }
@@ -120,7 +140,7 @@ export default function WhatsApp() {
       live = false;
       window.clearTimeout(timer);
     };
-  }, [search, refreshKey, selectedId]);
+  }, [search, refreshKey, selectedId, compact]);
 
   useEffect(() => {
     if (!selectedId) {
@@ -160,6 +180,7 @@ export default function WhatsApp() {
       const data = await createChannelThread({ phone, name: newContact.name });
       setThreads((items) => [data.thread, ...items.filter((item) => item.id !== data.thread.id)]);
       setSelectedId(data.thread.id);
+      if (compact) setMobileView("chat");
       setNewContact({ name: "", phone: "" });
     } catch (nextError) {
       setError(nextError.response?.data?.error || "Falha ao criar conversa");
@@ -212,9 +233,14 @@ export default function WhatsApp() {
     }
   };
 
+  const openThread = (id) => {
+    setSelectedId(id);
+    if (compact) setMobileView("chat");
+  };
+
   return (
-    <div className="grid gap-4 lg:h-[calc(100vh-2rem)] xl:grid-cols-[360px_minmax(0,1fr)_310px]">
-      <aside className="ios-surface flex min-h-[560px] flex-col overflow-hidden lg:min-h-0">
+    <div className={`grid gap-4 ${compact ? "h-[calc(100vh-7rem)]" : "lg:h-[calc(100vh-2rem)] xl:grid-cols-[360px_minmax(0,1fr)_310px]"}`}>
+      {showThreads && <aside className={`ios-surface wa-panel-in flex min-h-0 flex-col overflow-hidden ${compact ? "h-full" : "min-h-[560px] lg:min-h-0"}`}>
         <div className="border-b border-white/10 p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -222,6 +248,9 @@ export default function WhatsApp() {
               <div className="mt-1 text-xs text-slate-500">{status?.phoneNumberId || "Canal operacional"}</div>
             </div>
             <StateDot active={status?.connected} />
+          </div>
+          <div className="mt-4">
+            <ConnectButton status={status} />
           </div>
           <div className="ios-control mt-4 flex h-11 items-center gap-2 px-3">
             <Search size={16} className="text-slate-500" />
@@ -247,16 +276,23 @@ export default function WhatsApp() {
         </form>
 
         <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
-          {threads.map((item) => <ThreadRow key={item.id} item={item} active={item.id === selectedId} onClick={() => setSelectedId(item.id)} />)}
+          {threads.map((item) => <ThreadRow key={item.id} item={item} active={item.id === selectedId} onClick={() => openThread(item.id)} />)}
           {!threads.length && <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4 text-center text-sm text-slate-500">Nenhuma conversa</div>}
         </div>
-      </aside>
+      </aside>}
 
-      <section className="ios-surface flex min-h-[640px] flex-col overflow-hidden lg:min-h-0">
+      {showChat && <section className={`ios-surface wa-panel-in flex min-h-0 flex-col overflow-hidden ${compact ? "h-full" : "min-h-[640px] lg:min-h-0"}`}>
         <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
-          <div className="min-w-0">
-            <div className="truncate text-base font-semibold text-white">{selected?.name || selected?.address || "Selecione uma conversa"}</div>
-            <div className="mt-1 truncate text-xs text-slate-500">{selected?.address || "Mensagens"}</div>
+          <div className="flex min-w-0 items-center gap-3">
+            {compact && (
+              <button type="button" onClick={() => setMobileView("threads")} className="ios-button-secondary grid h-10 w-10 shrink-0 place-items-center text-slate-300">
+                <ArrowLeft size={18} />
+              </button>
+            )}
+            <div className="min-w-0">
+              <div className="truncate text-base font-semibold text-white">{selected?.name || selected?.address || "Selecione uma conversa"}</div>
+              <div className="mt-1 truncate text-xs text-slate-500">{selected?.address || "Mensagens"}</div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={read} disabled={!lastInbound} className="ios-button-secondary grid h-10 w-10 place-items-center text-slate-300 disabled:opacity-40" title="Marcar como lida">
@@ -321,7 +357,7 @@ export default function WhatsApp() {
             </div>
           </div>
         )}
-      </section>
+      </section>}
 
       <aside className="ios-surface hidden min-h-0 flex-col overflow-hidden xl:flex">
         <div className="border-b border-white/10 p-4">
@@ -339,10 +375,6 @@ export default function WhatsApp() {
           <div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4">
             <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Status</div>
             <div className="mt-3"><StateDot active={status?.connected} /></div>
-          </div>
-          <div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4">
-            <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Webhook</div>
-            <div className="mt-2 break-all font-mono text-xs text-slate-300">{status?.webhookUrl || "-"}</div>
           </div>
           <div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4">
             <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Contato</div>

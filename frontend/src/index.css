@@ -436,6 +436,10 @@ textarea {
   .ios-share-done {
     animation: ios-pop-in 220ms cubic-bezier(0.2, 0.86, 0.22, 1) both;
   }
+
+  .wa-panel-in {
+    animation: wa-panel-in 220ms cubic-bezier(0.2, 0.86, 0.22, 1) both;
+  }
 }
 
 @keyframes timeline-shine {
@@ -484,5 +488,16 @@ textarea {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes wa-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

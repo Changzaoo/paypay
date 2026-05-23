@@ -1,4 +1,4 @@
-import { BarChart3, LogOut, MessageCircle, Plus, Table2, X } from "lucide-react";
+import { BarChart3, LogOut, Plus, Table2, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import BrandMark from "./BrandMark";
@@ -6,8 +6,7 @@ import BrandMark from "./BrandMark";
 const links = [
   { to: "/", label: "Painel", icon: BarChart3 },
   { to: "/new", label: "Nova operacao", icon: Plus },
-  { to: "/orders", label: "Operacoes", icon: Table2 },
-  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle }
+  { to: "/orders", label: "Operacoes", icon: Table2 }
 ];
 
 function Content({ onNavigate }) {

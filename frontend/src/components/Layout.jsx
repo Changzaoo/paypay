@@ -1,4 +1,4 @@
-import { BarChart3, MessageCircle, Plus, Table2 } from "lucide-react";
+import { BarChart3, Plus, Table2 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useViewport } from "../hooks/useViewport";
 import Sidebar from "./Sidebar";
@@ -6,8 +6,7 @@ import Sidebar from "./Sidebar";
 const mobile = [
   { to: "/", label: "Painel", icon: BarChart3 },
   { to: "/new", label: "Nova", icon: Plus },
-  { to: "/orders", label: "Historico", icon: Table2 },
-  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle }
+  { to: "/orders", label: "Historico", icon: Table2 }
 ];
 
 export default function Layout() {
@@ -20,7 +19,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
-      <nav className="ios-dock fixed inset-x-3 bottom-3 z-30 grid grid-cols-4 px-2 lg:hidden">
+      <nav className="ios-dock fixed inset-x-3 bottom-3 z-30 grid grid-cols-3 px-2 lg:hidden">
         {mobile.map((item) => {
           const Icon = item.icon;
           return (

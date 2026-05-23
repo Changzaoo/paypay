@@ -58,43 +58,13 @@ export const getSettlementOptions = async () => {
   return data;
 };
 
-export const getChannelStatus = async () => {
-  const { data } = await api.get("/api/channel/status");
-  return data;
-};
-
-export const connectChannel = async () => {
-  const { data } = await api.post("/api/channel/connect");
-  return data;
-};
-
-export const disconnectChannel = async () => {
-  const { data } = await api.post("/api/channel/disconnect");
-  return data;
-};
-
 export const getChannelThreads = async (params) => {
   const { data } = await api.get("/api/channel/threads", { params });
   return Array.isArray(data.items) ? data.items : [];
 };
 
-export const createChannelThread = async (payload) => {
-  const { data } = await api.post("/api/channel/threads", payload);
-  return data;
-};
-
-export const getChannelMessages = async (id) => {
-  const { data } = await api.get(`/api/channel/threads/${id}/messages`);
-  return Array.isArray(data.items) ? data.items : [];
-};
-
 export const sendChannelMessage = async (payload) => {
   const { data } = await api.post("/api/channel/messages", payload);
-  return data;
-};
-
-export const markChannelRead = async (id) => {
-  const { data } = await api.post(`/api/channel/messages/${id}/read`);
   return data;
 };
 

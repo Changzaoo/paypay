@@ -63,7 +63,7 @@ export default function OrderDetails() {
           <div className="ios-surface p-5">
             <h3 className="mb-1 text-base font-semibold text-white">Mapa visual</h3>
             <p className="mb-4 text-sm text-slate-500">{current.status}</p>
-            <Timeline items={current.timeline} />
+            <Timeline items={current.timeline} flow={current} />
           </div>
           {current.error && <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200">{current.error}</div>}
         </section>

@@ -42,13 +42,13 @@ const readShift = (data = {}) => {
 
 export const timelineFor = (order) => {
   const steps = [
-    ["CREATED", "Criado"],
-    ["WAITING_PAYMENT", "Aguardando pagamento"],
-    ["PAYMENT_CONFIRMED", "Pagamento confirmado"],
+    ["CREATED", "Cobranca PIX"],
+    ["WAITING_PAYMENT", "Aguardando PIX"],
+    ["PAYMENT_CONFIRMED", "PIX confirmado"],
     ["WAITING_INTERMEDIATE_SETTLEMENT", "Aguardando liquidação"],
     ["INTERMEDIATE_CONVERSION_STARTED", "Conversão intermediária"],
     ["FINAL_SHIFT_CREATED", "Conversão final"],
-    ["WAITING_FINAL_DEPOSIT", "Enviado"],
+    ["WAITING_FINAL_DEPOSIT", "Envio final"],
     ["COMPLETED", "Concluído"]
   ];
   const ranks = {

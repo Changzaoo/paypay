@@ -92,6 +92,12 @@ export default function NewOrder() {
     return options.filter((item) => `${item.coin} ${item.name}`.toLowerCase().includes(text));
   }, [options, query]);
   const timelineItems = result?.timeline?.length ? result.timeline : stagePreview(Boolean(result));
+  const timelineFlow = {
+    ...result,
+    outputAsset: result?.outputAsset || form.outputAsset,
+    outputNetwork: result?.outputNetwork || form.outputNetwork,
+    outputNetworkLabel: selectedNetwork?.label
+  };
   const change = (key, value) => setForm((current) => ({ ...current, [key]: value }));
   const changeAsset = (item) => {
     const network = item.networks?.[0]?.id || "";
@@ -254,7 +260,7 @@ export default function NewOrder() {
               <StatusBadge value={result.status} />
             </div>
             <QRPaymentCard order={result} />
-            <Timeline items={timelineItems} />
+            <Timeline items={timelineItems} flow={timelineFlow} />
             <Link to={`/orders/${result.publicId}`} className="ios-button-secondary inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:bg-white/10">
               Abrir detalhe
               <ArrowRight size={16} />
@@ -263,7 +269,7 @@ export default function NewOrder() {
         ) : (
           <>
             <div className="ios-surface p-5 text-sm text-slate-500">A cobranca sera exibida aqui.</div>
-            <Timeline items={timelineItems} />
+            <Timeline items={timelineItems} flow={timelineFlow} />
           </>
         )}
       </aside>

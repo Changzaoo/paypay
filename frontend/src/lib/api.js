@@ -14,7 +14,7 @@ api.interceptors.request.use(async (config) => {
 });
 
 export const checkSession = async () => {
-  const { data } = await api.post("/api/auth/session-check");
+  const { data } = await api.post("/api/auth/session-check", undefined, { timeout: 8000 });
   return data;
 };
 

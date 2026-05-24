@@ -2,6 +2,8 @@ import * as db from "./db.service.js";
 import * as providerA from "./providerA.service.js";
 import * as providerB from "./providerB.service.js";
 import * as providerC from "./providerC.service.js";
+import * as liquidWallet from "./liquidWallet.service.js";
+import { intermediateAsset } from "./flowAssets.service.js";
 import { explorerUrl } from "../utils/address.js";
 import { hashValue, makePublicId, makeRef } from "../utils/crypto.js";
 
@@ -39,6 +41,10 @@ const readShift = (data = {}) => {
     raw: source
   };
 };
+
+const rawObject = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
+
+const intermediate = () => intermediateAsset();
 
 export const timelineFor = (order) => {
   const steps = [
@@ -92,6 +98,9 @@ export const shapeOrder = (order) => ({
   },
   intermediate: {
     status: order.intermediate_status,
+    asset: order.intermediate_asset || intermediate().coin,
+    network: order.intermediate_network || intermediate().network,
+    label: intermediate().label,
     expectedAmount: order.intermediate_expected_amount,
     receivedAmount: order.intermediate_received_amount,
     txid: order.intermediate_txid,
@@ -102,6 +111,7 @@ export const shapeOrder = (order) => ({
     providerId: order.settlement_provider_id,
     depositAddress: order.settlement_deposit_address,
     depositAmount: order.settlement_deposit_amount,
+    depositTxid: order.settlement_deposit_txid,
     settleAmount: order.settlement_settle_amount,
     outputAsset: order.settlement_output_asset,
     outputNetwork: order.settlement_output_network,
@@ -129,6 +139,7 @@ const insertNextJob = async (orderId, jobType, seconds = 5) => {
 export const createFlow = async (account, payload, ip) => {
   const publicId = makePublicId();
   const externalRef = makeRef("order");
+  const asset = intermediate();
   const base = await db.insertOrder({
     public_id: publicId,
     operator_id: account.id,
@@ -140,6 +151,8 @@ export const createFlow = async (account, payload, ip) => {
     customer_email: payload.customerEmail || null,
     customer_phone: payload.customerPhone || null,
     customer_document: payload.customerDocument || null,
+    intermediate_asset: asset.coin,
+    intermediate_network: asset.network,
     settlement_output_asset: payload.outputAsset,
     settlement_output_network: payload.outputNetwork,
     settlement_output_address: payload.outputAddress,
@@ -252,6 +265,7 @@ export const handleProviderEvent = async ({ headers, rawBody, body }) => {
 
 const startIntermediate = async (order) => {
   const mode = await db.getSetting("intermediate_mode", { mode: "manual" });
+  const asset = intermediate();
   if (mode?.mode !== "automatic") {
     return db.updateOrder(order.id, {
       status: "WAITING_MANUAL_STEP",
@@ -261,8 +275,8 @@ const startIntermediate = async (order) => {
   const quote = await providerB.requestQuote({
     orderId: order.public_id,
     inputAsset: "DEPIX",
-    outputAsset: "USDT",
-    outputNetwork: "liquid",
+    outputAsset: asset.coin,
+    outputNetwork: asset.network,
     amount: order.input_amount_brl
   });
   const accepted = await providerB.acceptQuote(quote.id || quote.quoteId);
@@ -271,6 +285,8 @@ const startIntermediate = async (order) => {
   return db.updateOrder(order.id, {
     status: amount && txid ? "INTERMEDIATE_CONVERSION_DONE" : "INTERMEDIATE_CONVERSION_STARTED",
     intermediate_status: amount && txid ? "DONE" : "STARTED",
+    intermediate_asset: asset.coin,
+    intermediate_network: asset.network,
     intermediate_received_amount: amount || null,
     intermediate_txid: txid || null,
     raw_intermediate: { quote, accepted },
@@ -284,6 +300,10 @@ export const createFinalShift = async (order, ip) => {
     return order;
   }
   const amount = order.intermediate_received_amount || order.intermediate_expected_amount;
+  const asset = {
+    coin: order.intermediate_asset || intermediate().coin,
+    network: order.intermediate_network || intermediate().network
+  };
   if (!amount) {
     return db.updateOrder(order.id, {
       status: "WAITING_MANUAL_STEP",
@@ -291,13 +311,13 @@ export const createFinalShift = async (order, ip) => {
     });
   }
   const quotePayload = {
-    depositCoin: "USDT",
-    depositNetwork: "liquid",
+    depositCoin: asset.coin,
+    depositNetwork: asset.network,
     settleCoin: order.settlement_output_asset,
     settleNetwork: order.settlement_output_network,
     depositAmount: String(amount),
     settleAddress: order.settlement_output_address,
-    settleMemo: order.raw_settlement?.outputMemo || undefined,
+    settleMemo: rawObject(order.raw_settlement).outputMemo || undefined,
     refundAddress: order.refund_address || undefined
   };
   const sourceIp = order.operator_ip || ip;
@@ -317,7 +337,7 @@ export const createFinalShift = async (order, ip) => {
     settlement_deposit_address: data.depositAddress,
     settlement_deposit_amount: data.depositAmount,
     settlement_settle_amount: data.settleAmount,
-    raw_settlement: { ...(order.raw_settlement?.outputMemo ? { outputMemo: order.raw_settlement.outputMemo } : {}), quote, shift },
+    raw_settlement: { ...rawObject(order.raw_settlement), quote, shift, intermediate: asset },
     error_message: null
   });
   await db.insertEvent({
@@ -326,12 +346,50 @@ export const createFinalShift = async (order, ip) => {
     source: "providerC",
     payload: { id: data.id, status: data.status }
   });
+  if (liquidWallet.isAutoSendEnabled()) return sendFinalDeposit(next, ip);
+  await insertNextJob(order.id, "FINAL_MONITOR", 45);
+  return next;
+};
+
+export const sendFinalDeposit = async (order, ip) => {
+  if (order.settlement_deposit_txid || rawObject(order.raw_settlement).depositTxid) {
+    await insertNextJob(order.id, "FINAL_MONITOR", 45);
+    return order;
+  }
+  if (!order.settlement_deposit_address) return createFinalShift(order, ip);
+  const amount = order.settlement_deposit_amount || order.intermediate_received_amount || order.intermediate_expected_amount;
+  if (!amount) {
+    const error = new Error("Valor de deposito ausente");
+    error.status = 409;
+    throw error;
+  }
+  const txid = await liquidWallet.sendLBtc({
+    address: order.settlement_deposit_address,
+    amount
+  });
+  const raw = rawObject(order.raw_settlement);
+  const next = await db.updateOrder(order.id, {
+    status: "FINAL_PROCESSING",
+    settlement_status: "deposit_sent",
+    settlement_deposit_txid: txid,
+    raw_settlement: { ...raw, depositTxid: txid, depositSentAt: new Date().toISOString() },
+    error_message: null
+  });
+  await db.insertEvent({
+    order_id: order.id,
+    event_type: "settlement.deposit.sent",
+    source: "liquid",
+    payload: { txid }
+  });
   await insertNextJob(order.id, "FINAL_MONITOR", 45);
   return next;
 };
 
 export const monitorFinalShift = async (order, ip) => {
   if (!order.settlement_provider_id) return createFinalShift(order, ip);
+  if (liquidWallet.isAutoSendEnabled() && !order.settlement_deposit_txid && !rawObject(order.raw_settlement).depositTxid) {
+    return sendFinalDeposit(order, ip);
+  }
   const result = await providerC.getShift(order.settlement_provider_id, order.operator_ip || ip);
   const data = readShift(result);
   const status = String(data.status || "").toLowerCase();
@@ -341,7 +399,7 @@ export const monitorFinalShift = async (order, ip) => {
       settlement_status: data.status || "settled",
       settlement_output_txid: data.settleHash || order.settlement_output_txid,
       settlement_settle_amount: data.settleAmount || order.settlement_settle_amount,
-      raw_settlement: result,
+      raw_settlement: { ...rawObject(order.raw_settlement), monitor: result },
       error_message: null
     });
   }
@@ -349,7 +407,7 @@ export const monitorFinalShift = async (order, ip) => {
     return db.updateOrder(order.id, {
       status: "FAILED",
       settlement_status: data.status || "failed",
-      raw_settlement: result,
+      raw_settlement: { ...rawObject(order.raw_settlement), monitor: result },
       error_message: "Falha na liquidação"
     });
   }
@@ -360,7 +418,7 @@ export const monitorFinalShift = async (order, ip) => {
     settlement_deposit_address: data.depositAddress || order.settlement_deposit_address,
     settlement_deposit_amount: data.depositAmount || order.settlement_deposit_amount,
     settlement_settle_amount: data.settleAmount || order.settlement_settle_amount,
-    raw_settlement: result
+    raw_settlement: { ...rawObject(order.raw_settlement), monitor: result }
   });
   await insertNextJob(order.id, "FINAL_MONITOR", 60);
   return next;

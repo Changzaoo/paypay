@@ -22,7 +22,7 @@ const stepText = [
   "PIX",
   "Confirmado",
   "DePix",
-  "USDT Liquid",
+  "LBTC Liquid",
   "SideShift",
   "Envio",
   "Final"
@@ -75,4 +75,4 @@ export const finalRoute = (item = {}) => {
   return `${asset} ${network}`;
 };
 
-export const flowRoute = (item = {}) => `PIX BRL -> DePix -> USDT Liquid -> ${finalRoute(item)}`;
+export const flowRoute = (item = {}) => `PIX BRL -> DePix -> LBTC Liquid -> ${finalRoute(item)}`;

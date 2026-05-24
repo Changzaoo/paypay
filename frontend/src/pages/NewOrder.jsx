@@ -6,7 +6,7 @@ import StatusBadge from "../components/StatusBadge";
 import Timeline from "../components/Timeline";
 import { useOrderStore } from "../store/orderStore";
 
-const sourceDefault = { coin: "USDT", network: "liquid", label: "USDT Liquid" };
+const sourceDefault = { coin: "BTC", network: "liquid", label: "LBTC Liquid" };
 const recentKey = "paypay_recent_routes";
 
 const fallbackOptions = [

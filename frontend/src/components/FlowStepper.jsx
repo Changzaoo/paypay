@@ -20,7 +20,7 @@ const stateRank = {
   CANCELLED: 1
 };
 
-const labels = ["PIX", "Entrada", "Confirmado", "DePix", "USDT L", "Shift", "Envio", "Final"];
+const labels = ["PIX", "Entrada", "Confirmado", "DePix", "LBTC", "Shift", "Envio", "Final"];
 const colors = ["#64748b", "#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e", "#14b8a6", "#06b6d4"];
 const terminal = new Set(["FAILED", "EXPIRED", "REFUNDED", "CANCELLED"]);
 const active = new Set(["PAYMENT_CONFIRMED", "WAITING_INTERMEDIATE_SETTLEMENT", "INTERMEDIATE_RECEIVED", "INTERMEDIATE_CONVERSION_STARTED", "INTERMEDIATE_CONVERSION_DONE", "FINAL_SHIFT_CREATED", "WAITING_FINAL_DEPOSIT", "FINAL_PROCESSING"]);

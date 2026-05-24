@@ -20,3 +20,23 @@ services:
         sync: false
       - key: TREASURY_KEY_MAIN
         sync: false
+      - key: FLOW_INTERMEDIATE_COIN
+        value: BTC
+      - key: FLOW_INTERMEDIATE_NETWORK
+        value: liquid
+      - key: FLOW_INTERMEDIATE_LABEL
+        value: LBTC Liquid
+      - key: SIDESWAP_EXECUTOR_URL
+        sync: false
+      - key: SIDESWAP_EXECUTOR_SECRET
+        sync: false
+      - key: LIQUID_AUTO_SEND
+        value: false
+      - key: LIQUID_RPC_URL
+        sync: false
+      - key: LIQUID_RPC_USER
+        sync: false
+      - key: LIQUID_RPC_PASSWORD
+        sync: false
+      - key: LIQUID_RPC_WALLET
+        sync: false

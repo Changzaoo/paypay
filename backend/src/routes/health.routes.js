@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { requireAdmin, requireAuth } from "../middlewares/auth.js";
 import { getAdminClient, getSetting, upsertSetting } from "../services/db.service.js";
+import { settlementSource } from "../services/flowAssets.service.js";
 import * as providerC from "../services/providerC.service.js";
 import { assets, fallbackSettlementOptions, networkLabels, networks } from "../utils/address.js";
 
 const router = Router();
-const sourceMethod = { coin: "USDT", network: "liquid", label: "USDT Liquid" };
 const optionCache = { expiresAt: 0, items: null };
 
 const titleCase = (value) => String(value || "").replace(/[-_]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -26,6 +26,7 @@ const normalizeOptions = (coins) => {
   return rows
     .map((item) => {
       const coin = String(item.coin || "").trim().toUpperCase();
+      const sourceMethod = settlementSource();
       const memo = new Set((Array.isArray(item.networksWithMemo) ? item.networksWithMemo : []).map((value) => String(value).toLowerCase()));
       const routes = (Array.isArray(item.networks) ? item.networks : [])
         .map((network) => String(network || "").trim().toLowerCase())
@@ -112,14 +113,16 @@ router.get("/config/public", requireAuth, async (req, res) => {
       account: dbOk,
       entry: Boolean(process.env.PIXGO_API_KEY),
       route: true,
-      settlement: Boolean(process.env.SIDESHIFT_SECRET)
+      settlement: Boolean(process.env.SIDESHIFT_SECRET),
+      intermediate: Boolean(process.env.SIDESWAP_EXECUTOR_URL || process.env.PROVIDER_B_API_URL),
+      liquid: Boolean(process.env.LIQUID_RPC_URL)
     }
   });
 });
 
 router.get("/config/settlement-options", requireAuth, async (req, res) => {
   res.json({
-    source: sourceMethod,
+    source: settlementSource(),
     items: await loadSettlementOptions(req.ip)
   });
 });

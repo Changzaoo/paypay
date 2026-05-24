@@ -18,6 +18,8 @@ create table if not exists internal_orders (
   customer_document text,
   intermediate_expected_amount numeric,
   intermediate_received_amount numeric,
+  intermediate_asset text default 'BTC',
+  intermediate_network text default 'liquid',
   intermediate_txid text,
   intermediate_status text,
   intermediate_note text,
@@ -25,6 +27,7 @@ create table if not exists internal_orders (
   settlement_status text,
   settlement_deposit_address text,
   settlement_deposit_amount numeric,
+  settlement_deposit_txid text,
   settlement_settle_amount numeric,
   settlement_output_asset text,
   settlement_output_network text,
@@ -196,6 +199,10 @@ on conflict (key) do nothing;
 insert into internal_settings(key, value)
 values ('enabled_networks', '{"networks":["bitcoin","ethereum","arbitrum","base","polygon","bsc"]}'::jsonb)
 on conflict (key) do nothing;
+
+alter table internal_orders add column if not exists intermediate_asset text default 'BTC';
+alter table internal_orders add column if not exists intermediate_network text default 'liquid';
+alter table internal_orders add column if not exists settlement_deposit_txid text;
 
 create table if not exists users_profile (
   id uuid primary key default gen_random_uuid(),

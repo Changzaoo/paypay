@@ -37,7 +37,7 @@ export default function ManualStepModal({ open, onClose, onSubmit }) {
         </div>
         <div className="grid gap-4">
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-300">Valor recebido</span>
+            <span className="text-sm font-medium text-slate-300">Valor LBTC recebido</span>
             <input
               type="number"
               step="0.00000001"

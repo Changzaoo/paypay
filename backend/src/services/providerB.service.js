@@ -1,19 +1,21 @@
 import axios from "axios";
 
-const baseURL = () => process.env.PROVIDER_B_API_URL;
+const baseURL = () => process.env.SIDESWAP_EXECUTOR_URL || process.env.PROVIDER_B_API_URL;
 
 const client = () => {
   if (!baseURL()) {
-    const error = new Error("Rota indisponível");
+    const error = new Error("Rota indisponivel");
     error.status = 503;
     throw error;
   }
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  if (process.env.SIDESWAP_EXECUTOR_SECRET) headers["x-executor-secret"] = process.env.SIDESWAP_EXECUTOR_SECRET;
   return axios.create({
     baseURL: baseURL(),
-    timeout: 25000,
-    headers: {
-      "Content-Type": "application/json"
-    }
+    timeout: 30000,
+    headers
   });
 };
 
@@ -32,14 +34,12 @@ export const acceptQuote = async (quoteId) => {
   return data;
 };
 
-export const signSwap = async () => {
-  const error = new Error("Assinatura indisponível");
-  error.status = 501;
-  throw error;
+export const signSwap = async (payload) => {
+  const { data } = await client().post("/sign", payload || {});
+  return data;
 };
 
-export const broadcastSwap = async () => {
-  const error = new Error("Envio indisponível");
-  error.status = 501;
-  throw error;
+export const broadcastSwap = async (payload) => {
+  const { data } = await client().post("/broadcast", payload || {});
+  return data;
 };

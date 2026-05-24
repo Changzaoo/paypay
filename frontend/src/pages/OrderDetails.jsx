@@ -180,6 +180,7 @@ export default function OrderDetails() {
             >
               <DetailRow label="Entrada" value={current.input?.providerId} mono />
               <DetailRow label="Intermediario" value={current.intermediate?.txid} mono />
+              <DetailRow label="Deposito" value={shortHash(current.settlement?.depositTxid)} mono />
               <DetailRow label="Tx final" value={shortHash(current.settlement?.txid)} mono />
             </Section>
           </div>

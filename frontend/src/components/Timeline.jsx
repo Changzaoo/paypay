@@ -65,6 +65,7 @@ const flowContext = (flow = {}) => {
     asset,
     network,
     finalRoute,
+    intermediateLabel: flow?.intermediate?.label || "LBTC Liquid",
     received: flow?.intermediate?.receivedAmount,
     settleAmount: flow?.settlement?.settleAmount,
     tx
@@ -106,21 +107,21 @@ const stageInfo = (key, flow) => {
       icon: Repeat2,
       eyebrow: "SideSwap",
       title: "Conversao intermediaria",
-      route: `DePix -> USDT Liquid${context.received ? ` (${context.received})` : ""}`,
-      detail: "DePix e convertido para USDT na Liquid."
+      route: `DePix -> ${context.intermediateLabel}${context.received ? ` (${context.received})` : ""}`,
+      detail: `DePix e convertido para ${context.intermediateLabel}.`
     },
     INTERMEDIATE_CONVERSION_DONE: {
       icon: Repeat2,
       eyebrow: "SideSwap",
-      title: "USDT Liquid pronto",
-      route: `DePix -> USDT Liquid${context.received ? ` (${context.received})` : ""}`,
+      title: `${context.intermediateLabel} pronto`,
+      route: `DePix -> ${context.intermediateLabel}${context.received ? ` (${context.received})` : ""}`,
       detail: "A etapa intermediaria foi concluida."
     },
     FINAL_SHIFT_CREATED: {
       icon: Repeat2,
       eyebrow: "SideShift",
       title: "Conversao final",
-      route: `USDT Liquid -> ${context.finalRoute}`,
+      route: `${context.intermediateLabel} -> ${context.finalRoute}`,
       detail: "Shift final criado para a moeda e rede escolhidas."
     },
     WAITING_FINAL_DEPOSIT: {
@@ -148,7 +149,7 @@ const stageInfo = (key, flow) => {
       icon: Clock3,
       eyebrow: "Manual",
       title: "Aguardando acao",
-      route: "DePix -> USDT Liquid",
+      route: `DePix -> ${context.intermediateLabel}`,
       detail: "Operador informa a liquidacao intermediaria para continuar."
     }
   };
@@ -185,7 +186,7 @@ export default function Timeline({ items = [], flow = {}, variant = "full" }) {
           <div className="mt-2 flex flex-wrap gap-2 text-xs font-medium text-slate-300">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">PIX BRL</span>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">DePix</span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">USDT Liquid</span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">{context.intermediateLabel}</span>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">{context.finalRoute}</span>
           </div>
         </div>

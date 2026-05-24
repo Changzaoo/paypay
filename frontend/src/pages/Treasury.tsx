@@ -474,6 +474,12 @@ export default function Treasury() {
                     <StatusPill value={item.status} />
                   </div>
                   <div className="mt-3 text-sm text-slate-400">{item.reason}</div>
+                  {item.risk_result?.repeatedAmount ? (
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1.5 text-xs font-semibold text-amber-100">
+                      <AlertTriangle size={14} />
+                      Valor repetido em revisao
+                    </div>
+                  ) : null}
                   {item.status === "pending_approval" ? (
                     <div className="mt-4 flex gap-2">
                       <SecondaryButton onClick={() => run(`approve-${item.id}`, () => treasuryApi.decideTransfer(item.id, { decision: "approved" }))}><Check size={15} />Aprovar</SecondaryButton>
@@ -545,6 +551,7 @@ export default function Treasury() {
                   <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-400">
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">{item.provider}</span>
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">{item.slippage_bps || 0} bps</span>
+                    {item.risk_result?.repeatedAmount ? <span className="rounded-full border border-amber-300/20 bg-amber-400/10 px-2.5 py-1 text-amber-100">Valor repetido</span> : null}
                   </div>
                   {item.status === "pending_approval" ? (
                     <div className="mt-4 flex gap-2">

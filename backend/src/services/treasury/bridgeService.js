@@ -38,14 +38,14 @@ export const getRequest = async (id) => {
 export const createRequest = async ({ actor, payload, ip }) => {
   const sourceWallet = await walletService.getWallet(payload.sourceWalletId);
   const destinationWallet = await walletService.getWallet(payload.destinationWalletId);
-  const check = await riskService.checkBridge({ sourceWallet, destinationWallet, amount: payload.amount, reason: payload.reason });
+  const sourceToken = await chainService.getToken({ chainId: sourceWallet.chain_id, symbol: payload.sourceToken });
+  const destinationToken = await chainService.getToken({ chainId: destinationWallet.chain_id, symbol: payload.destinationToken });
+  const check = await riskService.checkBridge({ sourceWallet, destinationWallet, sourceToken: sourceToken.symbol, destinationToken: destinationToken.symbol, amount: payload.amount, reason: payload.reason });
   if (!check.allowed) {
     const error = new Error(check.reason);
     error.status = 400;
     throw error;
   }
-  const sourceToken = await chainService.getToken({ chainId: sourceWallet.chain_id, symbol: payload.sourceToken });
-  const destinationToken = await chainService.getToken({ chainId: destinationWallet.chain_id, symbol: payload.destinationToken });
   const provider = providers[payload.provider] ? payload.provider : "sideshift";
   const quote = {
     provider,
@@ -70,6 +70,7 @@ export const createRequest = async ({ actor, payload, ip }) => {
     fee_estimate: payload.feeEstimate,
     slippage_bps: payload.slippageBps,
     reason: payload.reason,
+    risk_result: check,
     status: "pending_approval"
   }).select("*"));
   await one(db().from("bridge_steps").insert({

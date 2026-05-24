@@ -53,13 +53,13 @@ export const getRequest = async (id) => {
 export const createRequest = async ({ actor, payload, ip }) => {
   const sourceWallet = await walletService.getWallet(payload.sourceWalletId);
   const destinationWallet = await walletService.getWallet(payload.destinationWalletId);
-  const check = await riskService.checkTransfer({ sourceWallet, destinationWallet, amount: payload.amount, reason: payload.reason });
+  const token = await chainService.getToken({ chainId: sourceWallet.chain_id, symbol: payload.token });
+  const check = await riskService.checkTransfer({ sourceWallet, destinationWallet, token: token.symbol, amount: payload.amount, reason: payload.reason });
   if (!check.allowed) {
     const error = new Error(check.reason);
     error.status = 400;
     throw error;
   }
-  const token = await chainService.getToken({ chainId: sourceWallet.chain_id, symbol: payload.token });
   const row = await one(db().from("transfer_requests").insert({
     requester_id: actor.id,
     requester_email: actor.email,

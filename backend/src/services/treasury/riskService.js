@@ -10,6 +10,35 @@ export const createRule = async (payload) => {
   return one(db().from("risk_rules").insert(payload).select("*"));
 };
 
+const amountSignal = async ({ kind, chainId, destinationChainId, token, destinationToken, amount, sourceWalletId, destinationWalletId }) => {
+  if (kind === "bridge") {
+    const rows = await many(db().from("bridge_requests")
+      .select("id,status,created_at")
+      .eq("source_chain_id", chainId)
+      .eq("destination_chain_id", destinationChainId)
+      .eq("source_token_symbol", String(token).toUpperCase())
+      .eq("destination_token_symbol", String(destinationToken).toUpperCase())
+      .eq("amount", amount)
+      .eq("source_wallet_id", sourceWalletId)
+      .eq("destination_wallet_id", destinationWalletId)
+      .not("status", "in", "(rejected,cancelled)")
+      .order("created_at", { ascending: false })
+      .limit(1));
+    return rows[0] ? { repeatedAmount: true, referenceId: rows[0].id, action: "manual_review" } : { repeatedAmount: false };
+  }
+  const rows = await many(db().from("transfer_requests")
+    .select("id,status,created_at")
+    .eq("chain_id", chainId)
+    .eq("token_symbol", String(token).toUpperCase())
+    .eq("amount", amount)
+    .eq("source_wallet_id", sourceWalletId)
+    .eq("destination_wallet_id", destinationWalletId)
+    .not("status", "in", "(rejected,cancelled)")
+    .order("created_at", { ascending: false })
+    .limit(1));
+  return rows[0] ? { repeatedAmount: true, referenceId: rows[0].id, action: "manual_review" } : { repeatedAmount: false };
+};
+
 export const checkAddress = async ({ chainId, address }) => {
   if (!isAddress(address)) {
     return { allowed: false, reason: "Endereco invalido" };
@@ -28,7 +57,7 @@ export const checkAddress = async ({ chainId, address }) => {
   return { allowed: true, wallet };
 };
 
-export const checkTransfer = async ({ sourceWallet, destinationWallet, amount, reason }) => {
+export const checkTransfer = async ({ sourceWallet, destinationWallet, token, amount, reason }) => {
   if (!reason || String(reason).trim().length < 8) return { allowed: false, reason: "Justificativa obrigatoria" };
   if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) return { allowed: false, reason: "Valor invalido" };
   if (!sourceWallet || sourceWallet.status !== "approved") return { allowed: false, reason: "Origem nao aprovada" };
@@ -40,10 +69,18 @@ export const checkTransfer = async ({ sourceWallet, destinationWallet, amount, r
   if (!destinationCheck.allowed) return { allowed: false, reason: `Destino: ${destinationCheck.reason}` };
   const limit = Number(sourceWallet.daily_limit || 0);
   if (limit > 0 && Number(amount) > limit) return { allowed: false, reason: "Limite diario excedido" };
-  return { allowed: true };
+  const signal = await amountSignal({
+    kind: "transfer",
+    chainId: sourceWallet.chain_id,
+    token,
+    amount,
+    sourceWalletId: sourceWallet.id,
+    destinationWalletId: destinationWallet.id
+  });
+  return { allowed: true, ...signal };
 };
 
-export const checkBridge = async ({ sourceWallet, destinationWallet, amount, reason }) => {
+export const checkBridge = async ({ sourceWallet, destinationWallet, sourceToken, destinationToken, amount, reason }) => {
   if (!reason || String(reason).trim().length < 8) return { allowed: false, reason: "Justificativa obrigatoria" };
   if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) return { allowed: false, reason: "Valor invalido" };
   if (!sourceWallet || sourceWallet.status !== "approved") return { allowed: false, reason: "Origem nao aprovada" };
@@ -53,5 +90,15 @@ export const checkBridge = async ({ sourceWallet, destinationWallet, amount, rea
   if (!sourceCheck.allowed) return { allowed: false, reason: `Origem: ${sourceCheck.reason}` };
   const destinationCheck = await checkAddress({ chainId: destinationWallet.chain_id, address: destinationWallet.address });
   if (!destinationCheck.allowed) return { allowed: false, reason: `Destino: ${destinationCheck.reason}` };
-  return { allowed: true };
+  const signal = await amountSignal({
+    kind: "bridge",
+    chainId: sourceWallet.chain_id,
+    destinationChainId: destinationWallet.chain_id,
+    token: sourceToken,
+    destinationToken,
+    amount,
+    sourceWalletId: sourceWallet.id,
+    destinationWalletId: destinationWallet.id
+  });
+  return { allowed: true, ...signal };
 };

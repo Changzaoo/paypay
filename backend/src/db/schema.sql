@@ -322,6 +322,7 @@ create table if not exists bridge_requests (
   fee_estimate numeric,
   slippage_bps int default 50,
   reason text not null,
+  risk_result jsonb,
   status text default 'pending_approval',
   approved_by uuid,
   approved_at timestamptz,

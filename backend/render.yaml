@@ -13,3 +13,9 @@ services:
         value: https://paypay-ivory.vercel.app
       - key: BACKEND_PUBLIC_URL
         value: https://paypay-4836.onrender.com
+      - key: TREASURY_JOB_SECRET
+        sync: false
+      - key: TREASURY_DEFAULT_MNEMONIC
+        sync: false
+      - key: TREASURY_KEY_MAIN
+        sync: false

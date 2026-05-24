@@ -6,6 +6,7 @@ import channelRoutes from "./routes/channel.routes.js";
 import flowRoutes from "./routes/flow.routes.js";
 import healthRoutes from "./routes/health.routes.js";
 import internalRoutes from "./routes/internal.routes.js";
+import treasuryRoutes from "./routes/treasury.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import { requireAuth } from "./middlewares/auth.js";
 import { errorHandler, notFound } from "./middlewares/error.js";
@@ -57,6 +58,7 @@ app.post("/api/auth/session-check", requireAuth, (req, res) => {
 
 app.use("/api/flow", flowRoutes);
 app.use("/api/channel", channelRoutes);
+app.use("/api/treasury", treasuryRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/internal", internalRoutes);
 app.use("/api", healthRoutes);

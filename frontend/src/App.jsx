@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import NewOrder from "./pages/NewOrder";
 import OrderDetails from "./pages/OrderDetails";
 import Orders from "./pages/Orders";
+import Treasury from "./pages/Treasury";
 import { useAuthStore } from "./store/authStore";
 
 function Guard({ children }) {
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="new" element={<NewOrder />} />
           <Route path="orders" element={<Orders />} />
           <Route path="orders/:id" element={<OrderDetails />} />
+          <Route path="treasury" element={<Treasury />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
